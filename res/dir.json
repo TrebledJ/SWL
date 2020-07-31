@@ -1,0 +1,13 @@
+{
+    "dir": {
+        "config": "config/",
+        "terrain-maps": "maps/terrain/",
+        "world-maps": "maps/world/",
+        "sprites": "img/",
+        "terrain-sprites": "sprites/terrain/"
+    },
+    "config": {
+        "terrain": "terrain.json",
+        "classes": "classes.json"
+    }
+}

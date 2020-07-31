@@ -1,0 +1,37 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "clang++ build active file",
+            "command": "/usr/bin/clang++",
+            "args": [
+                "-std=c++17",
+                "-stdlib=libc++",
+                "-g", "${file}",
+                "-o", "${fileDirname}/${fileBasenameNoExtension}",
+                "-I", "${workspaceFolder}/src",
+                "-I", "/Library/Frameworks/SDL2.framework/Headers",
+                "-iframework", "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks",
+                "-iframework", "/Library/Frameworks",
+                "-F", "/Library/Frameworks/SDL2.framework/Headers",
+                "-F", "/Library/Frameworks/SDL2.framework",
+                "-F", "/Library/Frameworks",
+                
+                // "-L", "/Library/Frameworks/SDL2.framework/Versions/A",
+                // "-L", "/Library/Frameworks/SDL2.framework/Versions/A",
+                // "-l", "SDL2"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+    ]
+}
