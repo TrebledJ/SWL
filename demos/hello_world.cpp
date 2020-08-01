@@ -1,6 +1,6 @@
 #include "widgets/application.hpp"  //  Application
 #include "widgets/textbutton.hpp"   //  TextButton
-#include "types.hpp"                //  FontRef
+#include "types.hpp"
 #include "themes.hpp"               //  Themes
 #include <iostream>
 
