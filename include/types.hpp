@@ -48,14 +48,6 @@ using MusicRef = std::weak_ptr<Mix_Music>;
 
 
 /// convenience types:
-struct ValueRange {
-    int min;
-    int max;
-    
-    /// @brief  Checks if a value falls within the ValueRange (inclusive on both ends)
-    bool contains(int value) const;
-};
-
 struct Point
 {
     int x;
@@ -65,19 +57,6 @@ struct Point
     
     bool operator== (Point const&) const;
     bool operator!= (Point const&) const;
-    
-    /**
-     * @return  Manhattan distance between two points
-     */
-    unsigned distance(Point const&) const;
-    static unsigned distance(Point const&, Point const&);
-    
-    /**
-     * @brief   Checks if given point is adjacent to this point
-     */
-    bool is_adjacent(Point const&) const;
-    
-    friend std::string to_string(Point const&);
 };
 
 struct Size
@@ -156,18 +135,11 @@ using KeyEvent = SDL_KeyboardEvent; //  temporary, KeyEvent may change to a whol
 //  Implementation
 //
 
-/// ValueRange:
-inline bool ValueRange::contains(int value) const { return min <= value && value <= max; }
-
 /// Point:
 inline Point::Point() : Point(0, 0) {}
 inline Point::Point(int x, int y) : x{x}, y{y} {}
 inline bool Point::operator== (Point const& rhs) const { return x == rhs.x && y == rhs.y; }
 inline bool Point::operator!= (Point const& rhs) const { return x != rhs.x || y != rhs.y; }
-inline bool Point::is_adjacent(Point const& other) const { return distance(other) == 1; }
-inline unsigned Point::distance(Point const& other) const { return std::abs(other.x - x) + std::abs(other.y - y); }
-inline unsigned Point::distance(Point const& a, Point const& b) { return a.distance(b); }
-inline std::string to_string(Point const& pos) { return "(" + std::to_string(pos.x) + ", " + std::to_string(pos.y) + ")"; }
 
 /// Size:
 inline Size::Size() : Size(0, 0) {}
