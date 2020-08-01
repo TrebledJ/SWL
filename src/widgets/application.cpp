@@ -6,7 +6,7 @@
  */
 
 #include "application.hpp"
-#include <iostream>
+#include "themes.hpp"
 
 
 static constexpr unsigned FPS = 50;
@@ -27,6 +27,8 @@ Application::Application(SDL_Rect const& dimensions, std::string const& window_t
                                         set_active_music(MusicRef());
                                         foreach_child(&WidgetItem::hide);
                                     });
+    
+    background(Themes::BACKGROUND);
     
     Util::assert_true((window = make_window(window_title, x(), y(), width(), height(), window_flags)),
                       "[ERROR] Failed to initialise Window: ${sdl_error}");

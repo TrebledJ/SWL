@@ -61,8 +61,6 @@ int main(int argc, const char* argv[])
 DemoApplication::DemoApplication()
     : Application({50, 50, 640, 480}, "Scenes Demo")
 {
-    background(Themes::BACKGROUND);
-    
     font = add_font(fontpath, 18, Themes::SECONDARY, TTF_STYLE_NORMAL);
     init_widgets();
     

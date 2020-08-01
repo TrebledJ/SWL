@@ -81,7 +81,6 @@ int main(int argc, const char * argv[])
 DemoApplication::DemoApplication()
     : Application({50, 50, 640, 480}, "ListView Simple Demo")
 {
-    background(Themes::BACKGROUND);
     font = add_font(fontpath, 16, Themes::SECONDARY);
     init_menu_view();
     init_buttons();

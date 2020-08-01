@@ -98,7 +98,6 @@ int main(int argc, const char * argv[])
 DemoApplication::DemoApplication()
 	: Application({50, 50, 640, 480}, "ListView Hire-and-Fire Demo")
 {
-    background(Themes::BACKGROUND);
     header_font = add_font(fontpath, 14, Themes::SECONDARY);
     normal_font = add_font(fontpath, 12, Themes::SECONDARY);
     init_widgets();

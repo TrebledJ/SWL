@@ -59,7 +59,6 @@ int main(int argc, const char * argv[])
 DemoApplication::DemoApplication()
     : Application({50, 50, 640, 480}, "Buttons Demo")
 {
-    background(Themes::BACKGROUND);
     header_font = add_font(fontpath, 18, Themes::SECONDARY);
     normal_font = add_font(fontpath, 14, Themes::SECONDARY);
     

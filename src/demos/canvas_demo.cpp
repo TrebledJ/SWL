@@ -110,8 +110,6 @@ int main(int argc, const char * argv[])
 DemoApplication::DemoApplication()
     : Application({50, 50, 640, 480}, "Canvas Demo")
 {
-    background(Themes::BACKGROUND);
-    
     font_normal = add_font(fontpath, 18, Themes::SECONDARY);
     font_small = add_font(fontpath, 14, Themes::SECONDARY);
     
