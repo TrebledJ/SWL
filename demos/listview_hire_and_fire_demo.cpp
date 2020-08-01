@@ -5,6 +5,7 @@
 //  Hire and fire employees by selecting them and clicking the corresponding buttons!
 //   * Select employees on the left and click hire to move them to the right.
 //   * Do the same with employees on the right (except you get to enjoy firing them).
+//   * Employees are ordered by their ID.
 //
 
 #include "widgets/application.hpp"
