@@ -2,13 +2,11 @@
 //  This program demonstrates the interaction and configuration of a MenuView.
 //  It also demonstrates the ability to dynamically update a MenuView.
 //
-//  To test:
-//    Build the program with at least C++11.
-//    Change the font path declaration below if necessary, to point to a valid font file.
-//      std::string fontpath = "...";
-//    Run the program and test the menu view by clicking on buttons on the left
-//      or the menu on the right.
-//      Output should appear wherever std::cout prints (no output in this demo).
+//  Click on the control-panel buttons on the left or interact with the menu on the right!
+//   * Target: displays either the current "page" or an individual item on the right.
+//   * In: goes into the target page
+//   * Out: goes to the parent page
+//   * Clear: deletes all items on the current page
 //
 
 #include "widgets/application.hpp"
@@ -29,7 +27,7 @@
 #include <vector>
 
 
-const std::string fontpath = "res/fonts/luximr.ttf";
+const std::string fontpath = "fonts/luxisr.ttf";
 
 
 static std::string generate_string(std::string const& pre, int depth, int index)

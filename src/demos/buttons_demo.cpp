@@ -1,14 +1,10 @@
 //
-//  To test:
-//    Build the program with at least C++11.
-//    Change the font path declaration below if necessary, to point to a valid font file.
-//      std::string fontpath = "...";
-//    Run the program and test each button. Output should appear wherever std::cout prints.
-//      Click, press, release, and hover on the upper buttons.
-//      Hover should only work when no buttons are pressed.
-//      Click on the button labelled "click to move" several times. This tests move construction and assignment.
-//      Click on the button labelled "click to copy" several times and interact with the button on its right.
-//        This tests copy assignment.
+//  Mouse and click around!
+//   * Click, press, release, and hover on the upper buttons.
+//   * Hover only works when no buttons are pressed.
+//   * Click on the button labelled "click to move" several times. This tests move construction and assignment.
+//   * Click on the button labelled "click to copy" several times and interact with the button on its right.
+//      This tests copy assignment.
 //
 
 #include "widgets/application.hpp"
@@ -27,7 +23,7 @@
 #include <vector>
 
 
-const std::string fontpath = "res/fonts/luximr.ttf";
+const std::string fontpath = "fonts/luxisr.ttf";
 
 
 class DemoApplication : public Application

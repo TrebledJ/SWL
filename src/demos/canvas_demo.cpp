@@ -1,12 +1,7 @@
 //
-//  To test:
-//    Build the program with at least C++11.
-//    Change the font path declaration below if necessary, to point to a valid font file.
-//      std::string fontpath = "...";
-//    Run the program and test the canvases by interacting with the items inside.
-//      Output should appear wherever std::cout prints.
-//    "A" buttons respond when clicked. "B" buttons respond when pressed.
-//    "C" buttons respond when hovered. The ListView in canvas 3 should respond when scrolled.
+//  Interact with the items inside the canvases!
+//   * "A" buttons respond when clicked. "B" buttons respond when pressed.
+//   * "C" buttons respond when hovered. The ListView in canvas 3 should respond when scrolled.
 //
 
 #include "widgets/application.hpp"
@@ -29,7 +24,7 @@
 #include <sstream>
 
 
-const std::string fontpath = "res/fonts/luximr.ttf";
+const std::string fontpath = "fonts/luxisr.ttf";
 
 
 enum UnitClass
@@ -101,8 +96,14 @@ private:
 
 int main(int argc, const char * argv[])
 {
-    DemoApplication app;
-    return app.run();
+    try
+    {
+        DemoApplication app;
+        return app.run();
+    } catch (std::runtime_error& err) {
+        std::cout << "An exception occurred..." << std::endl;
+        std::cout << err.what() << std::endl;
+    }
 }
 
 

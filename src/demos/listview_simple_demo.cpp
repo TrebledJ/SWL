@@ -2,13 +2,8 @@
 //  This program demonstrates the scalability of the ListModel and ListView along with
 //  how to configure them (see init_listview()).
 //
-//  To test:
-//    Build the program with at least C++11.
-//    Change the font path declaration below if necessary, to point to a valid font file.
-//      std::string fontpath = "...";
-//    Run the program and test the listview by scrolling and clicking on items.
-//      Output should appear wherever std::cout prints (no output in this demo).
-//    Adjust the NUM_LIST_ITEMS constant below to a higher value (try 2000).
+//  Scroll and click on the items inside the listview!
+//   * Adjust the NUM_LIST_ITEMS constant below to a higher value (try 2000).
 //
 
 #include "widgets/application.hpp"
@@ -28,8 +23,8 @@
 #include <vector>
 
 
-const std::string fontpath = "res/fonts/luximr.ttf";
-const unsigned NUM_LIST_ITEMS = 50;     //  minimum: 20
+const std::string fontpath = "fonts/luxisr.ttf";
+const unsigned NUM_LIST_ITEMS = 50;
 
 
 //  ListModel/ListView are designed for classes that inherit ListItem,
@@ -126,8 +121,7 @@ void DemoApplication::init_listview()
                 .add({16,"Doctor",   "Doof",     "Cartoon Antagonist"})
                 .add({17,"Pikachu",  "",         "Cute Lightning Mouse"})
                 .add({18,"Tony",     "Stark",    "Fly Guy"})
-                .add({19,"Captain",  "Hook",     "Cartoon Antagonist"})
-                .add({20,"Donlad",   "Rump",     "President"});
+                .add({19,"Captain",  "Hook",     "Cartoon Antagonist"});
     for (auto i = 21; i <= NUM_LIST_ITEMS; ++i)
     {
         employees.add({i, std::string(3, 'A'+i%26), std::string(3, 'a'+i%26), std::string(1, '0'+i%10)});

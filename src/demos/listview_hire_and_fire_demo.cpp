@@ -2,14 +2,9 @@
 //  This program demonstrates how the ListModel and ListView objects interact dynamically
 //  with items. Buttons are used to interact with the ListModel.
 //
-//  To test:
-//    Build the program with at least C++11.
-//    Change the font path declaration below if necessary, to point to a valid font file.
-//      std::string fontpath = "...";
-//    Run the program and test the listviews by scrolling and clicking on items.
-//      Output should appear wherever std::cout prints.
-//    Select employees on the left and click hire to move them to the right.
-//    Do the same with employees on the right (except you get to enjoy firing them).
+//  Hire and fire employees by selecting them and clicking the corresponding buttons!
+//   * Select employees on the left and click hire to move them to the right.
+//   * Do the same with employees on the right (except you get to enjoy firing them).
 //
 
 #include "widgets/application.hpp"
@@ -29,7 +24,7 @@
 #include <vector>
 
 
-const std::string fontpath = "res/fonts/luximr.ttf";
+const std::string fontpath = "fonts/luxisr.ttf";
 
 
 struct Employee : public ListItem
@@ -147,8 +142,7 @@ void DemoApplication::init_listmodels()
                 .add({16,"Doctor",   "Doof",     "Antagonist"})
                 .add({17,"Pikachu",  "",         "Mouse"})
                 .add({18,"Tony",     "Stark",    "Fly Guy"})
-                .add({19,"Captain",  "Hook",     "Antagonist"})
-                .add({20,"Tronald",  "Dump",     "President"});
+                .add({19,"Captain",  "Hook",     "Antagonist"});
     
     unemployed.sorter([](Employee const& a, Employee const& b) { return a.id < b.id; });
     employed.sorter([](Employee const& a, Employee const& b) { return a.id < b.id; });

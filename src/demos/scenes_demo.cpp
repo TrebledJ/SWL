@@ -1,12 +1,7 @@
 //
-//  To test:
-//    Build the program with at least C++11.
-//    Change the font path declaration below if necessary, to point to a valid font file.
-//      std::string fontpath = "...";
-//    Output should appear wherever std::cout prints.
-//    Click on "New". The "scene" should change, displaying a different interface.
-//      Click on "Menu" to return to the first scene. Click on "Exit" to quit the program.
-//    The other buttons do nothing as of yet.
+//  Click on these buttons to try out scenes!
+//   * Clicking on "New" will bring you to a different "scene".
+//   * Clicking on "Menu" will return you to the first scene.
 //
 
 #include "widgets/application.hpp"
@@ -26,7 +21,7 @@
 #include <vector>
 
 
-const std::string fontpath = "res/fonts/luximr.ttf";
+const std::string fontpath = "fonts/luxisr.ttf";
 
 
 enum class Scene
@@ -42,9 +37,6 @@ public:
     
 private:
     FontRef font;
-//    TextItem title_text;
-//    Canvas menu_scene;
-//    Canvas main_scene;
     
 private:
     void init_widgets();
