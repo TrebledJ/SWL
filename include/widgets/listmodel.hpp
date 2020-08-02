@@ -1,4 +1,6 @@
 /*
+ *      Copyright (C) 2020 Johnathan Law
+ *
  *      This file is part of SWL.
  *
  *      SWL is free software: you can redistribute it and/or modify
