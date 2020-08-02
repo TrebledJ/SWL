@@ -72,7 +72,7 @@ namespace Colors {
      */
     inline SDL_Color darken(SDL_Color const& color, float factor)
     {
-        factor = (factor > 1.0 ? 1.0 : factor < 0.0 ? 0.0);
+        factor = (factor > 1.0 ? 1.0 : factor < 0.0 ? 0.0 : factor);
         return SDL_Color{Uint8(color.r * (1 - factor)), Uint8(color.g * (1 - factor)), Uint8(color.b * (1 - factor)), color.a};
     }
     
@@ -81,7 +81,7 @@ namespace Colors {
      */
     inline SDL_Color lighten(SDL_Color const& color, float factor)
     {
-        factor = (factor > 1.0 ? 1.0 : factor < 0.0 ? 0.0);
+        factor = (factor > 1.0 ? 1.0 : factor < 0.0 ? 0.0 : factor);
         return SDL_Color{
             Uint8(color.r + (255 - color.r)*factor),
             Uint8(color.g + (255 - color.g)*factor),
