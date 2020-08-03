@@ -22,11 +22,14 @@
 #define DATAVIEW_HPP
 
 #include "datamodel.hpp"
-#include "button.hpp"
+#include "widgets/widgetitem.hpp"
+#include "interfaces/button.hpp"
 
 #include <string>
 #include <vector>
 
+
+class Canvas;
 
 /**
  * @brief   An abstract base class to render a data model.
@@ -40,29 +43,31 @@
  *          internal_height(), y0()
  */
 template<class T>
-class DataView : public Button
+class DataView : public RectItem, public ButtonInterface
 {
+    using Super = RectItem;
+    
 public:
     using IndexCallback = std::function<void(int index)>;
     using WheelEventCallback = std::function<void(WheelEvent const&)>;
 
 public:
     /// constructors:
-    DataView() noexcept;
-    DataView(SDL_Rect const&) noexcept;
+    DataView(Canvas* parent = nullptr) noexcept;
+    DataView(SDL_Rect const&, Canvas* parent = nullptr) noexcept;
 
     //  copy-ctor and copy-asgn are deleted so that properties are EXPLICIT
     //  (either from move funcs or modifiers) and so that there will be no
     //  complications with copying button handlers
     DataView(DataView const& other) = delete;
-    DataView(DataView&&) noexcept;
+    DataView(DataView&&) = delete;
 
     /// destructor:
     virtual ~DataView();
     
     /// assignment:
     DataView& operator= (DataView const& other) = delete;
-    DataView& operator= (DataView&&) noexcept;
+    DataView& operator= (DataView&&) = delete;
 
     /// modifiers:
     DataView& model(DataModel<T>* model);
@@ -134,37 +139,22 @@ private:
 
 /// constructors:
 template<class T>
-inline DataView<T>::DataView() noexcept
-    : DataView<T>({0, 0, 0, 0})
+inline DataView<T>::DataView(Canvas* parent) noexcept
+    : DataView<T>({0, 0, 0, 0}, parent)
 {
 }
 template<class T>
-inline DataView<T>::DataView(SDL_Rect const& dimensions) noexcept
-    : Button(dimensions)
+inline DataView<T>::DataView(SDL_Rect const& dimensions, Canvas* parent) noexcept
+    : Super(dimensions, parent)
     , m_model{nullptr}
     , m_item_height{40}
     , m_display_index{0}
 {
 }
-template<class T>
-inline DataView<T>::DataView(DataView&& other) noexcept : Button{std::move(other)}
-{
-    swap_members(other);
-    other.m_model = nullptr;
-}
 
 /// destructor:
 template<class T>
 inline DataView<T>::~DataView() = default;
-
-/// assignment:
-template<class T>
-inline DataView<T>& DataView<T>::operator= (DataView&& other) noexcept
-{
-    swap(other);
-    other.m_model = nullptr;
-    return *this;
-}
 
 /// modifiers:
 template<class T>
@@ -188,14 +178,14 @@ inline DataView<T>& DataView<T>::on_index_hovered(IndexCallback f) { m_index_hov
 template<class T>
 inline bool DataView<T>::is_visible() const
 {
-    return Button::is_visible() && m_model && !m_item_font.expired();
+    return Super::is_visible() && m_model && !m_item_font.expired();
 }
 
 /// GUI functions:
 template<class T>
 bool DataView<T>::handle_mouse_event(MouseEvent const& event)
 {
-    if (!Button::handle_mouse_event(event))
+    if (!Super::handle_mouse_event(event))
         return false;
     
     auto index = get_index_under(event.pos.x, event.pos.y);
@@ -214,7 +204,7 @@ bool DataView<T>::handle_mouse_event(MouseEvent const& event)
 template<class T>
 bool DataView<T>::handle_wheel_event(WheelEvent const& event)
 {
-    if (!Button::handle_wheel_event(event))
+    if (!Super::handle_wheel_event(event))
         return false;
     
     int delta = event.wheel.y;
@@ -231,7 +221,7 @@ bool DataView<T>::handle_wheel_event(WheelEvent const& event)
 template<class T>
 bool DataView<T>::render(Renderer const& renderer) const
 {
-    if (!Button::render(renderer))
+    if (!Super::render(renderer))
         return false;
     
     render_body(renderer);
@@ -242,7 +232,7 @@ bool DataView<T>::render(Renderer const& renderer) const
 template<class T>
 void DataView<T>::swap(DataView& other) noexcept
 {
-    Button::swap(other);
+    Super::swap(other);
     swap_members(other);
 }
 

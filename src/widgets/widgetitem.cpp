@@ -19,14 +19,44 @@
  */
 
 #include "widgetitem.hpp"
+
+#include "canvas.hpp"
 #include "types.hpp"
 #include "utility.hpp"
 
+
+/// constructors:
+WidgetItem::WidgetItem(Canvas* parent) noexcept : WidgetItem(SDL_Rect{0}, parent) {}
+WidgetItem::WidgetItem(SDL_Rect const& dimensions, Canvas* parent) noexcept
+    : m_dimensions(dimensions)
+    , m_parent(parent)
+    , m_visible(true)
+    , m_enabled(true)
+{
+    this->add_to_parent();
+}
 
 /// convenience functions:
 void WidgetItem::swap(WidgetItem& item) noexcept
 {
     using std::swap;
     swap(m_dimensions, item.m_dimensions);
+    swap(m_parent, item.m_parent);
     swap(m_visible, item.m_visible);
+    swap(m_enabled, item.m_enabled);
 }
+
+void WidgetItem::add_to_parent()
+{
+    if (m_parent)
+        m_parent->add_item(this);
+}
+
+//void WidgetItem::remove_from_parent()
+//{
+//    if (m_parent)
+//    {
+//        m_parent->remove(this);
+//        m_parent = nullptr;
+//    }
+//}

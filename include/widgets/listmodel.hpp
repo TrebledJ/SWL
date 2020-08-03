@@ -101,9 +101,9 @@ public:
     /// accessors:
     std::size_t rows() const;
     T const& at(std::size_t index) const;
-    T        at(std::size_t index);
+    T&       at(std::size_t index);
     T const& operator[] (std::size_t index) const;
-    T        operator[] (std::size_t index);
+    T&       operator[] (std::size_t index);
     
     int count_selected_items() const;
     std::vector<T> selected_items() const;
@@ -206,11 +206,11 @@ inline std::size_t ListModel<T>::rows() const { return m_items.size(); }
 template<class T>
 inline T const& ListModel<T>::at(std::size_t index) const { return m_items.at(index); }
 template<class T>
-inline T        ListModel<T>::at(std::size_t index) { return m_items.at(index); }
+inline T&       ListModel<T>::at(std::size_t index) { return m_items.at(index); }
 template<class T>
 inline T const& ListModel<T>::operator[] (std::size_t index) const { return m_items[index]; }
 template<class T>
-inline T        ListModel<T>::operator[] (std::size_t index) { return m_items[index]; }
+inline T&       ListModel<T>::operator[] (std::size_t index) { return m_items[index]; }
 
 template<class T>
 int ListModel<T>::count_selected_items() const

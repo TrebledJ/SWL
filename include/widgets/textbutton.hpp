@@ -21,9 +21,12 @@
 #ifndef TEXTBUTTON_HPP
 #define TEXTBUTTON_HPP
 
-#include "button.hpp"
-#include "textitem.hpp"
+#include "widgets/rectitem.hpp"
+#include "interfaces/button.hpp"
+#include "interfaces/text.hpp"
 
+
+class Canvas;
 
 /**
  * @brief   Combines a button together with text
@@ -35,66 +38,44 @@
  *
  * @note    Item will not be visible if font is not set.
  */
-class TextButton : public Button, public TextItem
+class TextButton : public RectItem, public ButtonInterface, public TextInterface
 {
+    using Super = RectItem;
+    
 public:
     /// constructors:
-    TextButton() noexcept;
-    TextButton(SDL_Rect const&) noexcept;
-    TextButton(TextButton const&);
-    TextButton(TextButton&&) noexcept;
+    TextButton(Canvas* parent = nullptr) noexcept;
+    TextButton(SDL_Rect const& dimensions, Canvas* parent = nullptr) noexcept;
+    TextButton(TextButton const&) = delete;
+    TextButton(TextButton&&) = delete;
     
     /// destructor:
     virtual ~TextButton();
     
     /// assignment:
-    TextButton& operator= (TextButton const&);
-    TextButton& operator= (TextButton&&) noexcept;
+    TextButton& operator= (TextButton const&) = delete;
+    TextButton& operator= (TextButton&&) = delete;
     
     /// accessors:
     virtual bool is_visible() const override;
     
     /// GUI functions:
+    virtual bool handle_mouse_event(MouseEvent const&) override;
     virtual bool render(Renderer const&) const override;
-
-    /// convenience functions:
-    void swap(TextButton&) noexcept;
 };
 
 
 /// constructors:
-inline TextButton::TextButton() noexcept : TextButton(SDL_Rect{0}) {}
-inline TextButton::TextButton(SDL_Rect const& dimensions) noexcept : Button(dimensions), TextItem(ALIGN_CENTER) {}
-inline TextButton::TextButton(TextButton const&) = default;
-inline TextButton::TextButton(TextButton&& button) noexcept : TextButton{}
-{
-    //  providing a non-default implementation just
-    //  so that we don't swap Item twice
-    swap(button);
-}
+inline TextButton::TextButton(Canvas* parent) noexcept : TextButton(SDL_Rect{0}, parent) {}
+inline TextButton::TextButton(SDL_Rect const& dimensions, Canvas* parent) noexcept : Super(dimensions, parent), TextInterface(ALIGN_CENTER) {}
 
 /// destructor:
 inline TextButton::~TextButton() = default;
 
-/// assignment:
-inline TextButton& TextButton::operator= (TextButton const&) = default;
-inline TextButton& TextButton::operator= (TextButton&& button) noexcept
-{
-    swap(button);
-    return *this;
-}
-
 /// accessors:
 inline bool TextButton::is_visible() const
 {
-    return TextItem::is_visible();
-}
-
-/// GUI functions:
-inline bool TextButton::render(Renderer const& renderer) const
-{
-    //  draw button before text
-    return Button::render(renderer) && TextItem::render(renderer);
+    return Super::is_visible() && !m_font.expired();
 }
 
 

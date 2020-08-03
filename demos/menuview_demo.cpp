@@ -16,18 +16,12 @@
 #include "widgets/textbutton.hpp"
 
 #include "themes.hpp"
-#include "types.hpp"
-#include "utility.hpp"
-
-#include "sdl_ttf_inc.hpp"
-#include "sdl_inc.hpp"
 
 #include <iostream>
 #include <string>
-#include <vector>
 
 
-const std::string fontpath = "fonts/luxisr.ttf";
+const std::string fontpath = "demos/fonts/luxisr.ttf";
 
 
 static std::string generate_string(std::string const& pre, int depth, int index)
@@ -71,7 +65,9 @@ int main(int argc, const char * argv[])
     {
         DemoApplication app;
         return app.run();
-    } catch (std::runtime_error& err) {
+    }
+    catch (std::runtime_error& err)
+    {
         std::cout << "An exception occurred..." << std::endl;
         std::cout << err.what() << std::endl;
     }
@@ -88,9 +84,8 @@ DemoApplication::DemoApplication()
 
 void DemoApplication::init_menu_view()
 {
-    auto title_text = new TextItem({0, 0, width() - 180, 60});
-    title_text->text("MenuView Demo").font(font).align(ALIGN_CENTER);
-    this->add_item(title_text);
+    auto title_text = new TextItem({0, 0, width() - 180, 60}, this);
+    title_text->text("MenuView Demo", font, ALIGN_CENTER);
 
     menu_model.back_navigation(true);
     {
@@ -143,18 +138,18 @@ void DemoApplication::init_menu_view()
 
 void DemoApplication::init_buttons()
 {
-    auto target_button = new TextButton({child("menu-view")->x()/2 - 100, 120, 200, 40});
+    auto target_button = new TextButton({child("menu-view")->x() / 2 - 100, 120, 200, 40});
     target_button->background(Themes::PRIMARY);
-    target_button->font(font).text("");
+    target_button->text("", font);
     target_button->on_left_clicked([this](MouseEvent const& event)
     {
         update_index(index + 1);
         update();
     });
     
-    auto in_button = new TextButton(*target_button);
-    in_button->y(170).width(95);
-    in_button->text("In");
+    auto in_button = new TextButton({child("menu-view")->x() / 2 - 100, 170, 95, 40});
+    in_button->background(Themes::PRIMARY);
+    in_button->text("In", font);
     in_button->on_left_clicked([this](MouseEvent const& event)
     {
         if (menu_model.go_to_index(index))
@@ -165,9 +160,8 @@ void DemoApplication::init_buttons()
         }
     });
     
-    auto out_button = new TextButton(*in_button);
-    out_button->x(child("menu-view")->x()/2 + 5);
-    out_button->text("Out");
+    auto out_button = new TextButton({child("menu-view")->x() / 2 + 5, 170, 95, 40});
+    out_button->text("Out", font);
     out_button->on_left_clicked([this](MouseEvent const& event)
     {
         if (menu_model.go_to_parent())
@@ -178,9 +172,8 @@ void DemoApplication::init_buttons()
         }
     });
     
-    auto add_button = new TextButton(*target_button);
-    add_button->y(220);
-    add_button->text("Add");
+    auto add_button = new TextButton({child("menu-view")->x() / 2 - 100, 220, 200, 40});
+    add_button->text("Add", font);
     add_button->on_left_clicked([this](MouseEvent const& event)
     {
         if (index == -1)
@@ -190,9 +183,8 @@ void DemoApplication::init_buttons()
         update();
     });
     
-    auto clear_button = new TextButton(*target_button);
-    clear_button->y(270);
-    clear_button->text("Clear");
+    auto clear_button = new TextButton({child("menu-view")->x() / 2 - 100, 270, 200, 40});
+    clear_button->text("Clear", font);
     clear_button->on_left_clicked([this](MouseEvent const& event)
     {
         if (index == -1)
@@ -221,7 +213,6 @@ void DemoApplication::update_index(int index)
 }
 
 void DemoApplication::update()
-
 {
     //  update enable/disable state where needed
     if (index == -1 || menu_model.node()->is_final())

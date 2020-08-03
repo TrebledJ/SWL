@@ -11,21 +11,16 @@
 #include "widgets/application.hpp"
 #include "widgets/listmodel.hpp"
 #include "widgets/listview.hpp"
+#include "widgets/textitem.hpp"
 #include "widgets/textbutton.hpp"
 
 #include "themes.hpp"
-#include "types.hpp"
-#include "utility.hpp"
-
-#include "sdl_ttf_inc.hpp"
-#include "sdl_inc.hpp"
 
 #include <iostream>
 #include <string>
-#include <vector>
 
 
-const std::string fontpath = "fonts/luxisr.ttf";
+const std::string fontpath = "demos/fonts/luxisr.ttf";
 
 
 struct Employee : public ListItem
@@ -57,7 +52,7 @@ struct Employee : public ListItem
     /// convenience overload for debugging later
     friend std::ostream& operator<< (std::ostream& os, Employee const& e)
     {
-        os << e.first_name << " " << e.last_name << " (" << e.role << ", id " << e.id << ")";
+        os << e.first_name << (e.last_name.empty() ? "" : " " + e.last_name) << " (" << e.role << ", id " << e.id << ")";
         return os;
     }
 };
@@ -89,7 +84,9 @@ int main(int argc, const char * argv[])
     {
         DemoApplication app;
         return app.run();
-    } catch (std::runtime_error& err) {
+    }
+    catch (std::runtime_error& err)
+    {
         std::cout << "An exception occurred..." << std::endl;
         std::cout << err.what() << std::endl;
     }
@@ -106,14 +103,11 @@ DemoApplication::DemoApplication()
     
 void DemoApplication::init_widgets()
 {
-    auto left_title_text = new TextItem({0, 0, width()/2, 60});
-    left_title_text->text("Unemployed").font(header_font).align(ALIGN_CENTER);
-    add_item(left_title_text);
+    auto left_title_text = new TextItem({0, 0, width()/2, 60}, this);
+    left_title_text->text("Unemployed", header_font, ALIGN_CENTER);
     
-    auto right_title_text = new TextItem(*left_title_text);
-    right_title_text->pos(width()/2, 0);
-    right_title_text->text("Employed");
-    add_item(right_title_text);
+    auto right_title_text = new TextItem({width()/2, 0, width()/2, 60}, this);
+    right_title_text->text("Employed", header_font, ALIGN_CENTER);
     
     init_listmodels();
     init_listview();
@@ -150,7 +144,7 @@ void DemoApplication::init_listmodels()
     
 void DemoApplication::init_listview()
 {
-    auto hireable = new ListView<Employee>({20, 60, 290, 320});
+    auto hireable = new ListView<Employee>({20, 60, 290, 320}, this);
     hireable->headers({"ID", "First", "Last", "Job"}).header_font(header_font).header_height(30);
     hireable->item_font(normal_font).item_height(20);
     hireable->column_ratios({1, 3, 3, 4}).margins(Margins(10));
@@ -162,9 +156,8 @@ void DemoApplication::init_listview()
         if (index != -1)
             unemployed.toggle_select(index);
     });
-    add_item(hireable);
     
-    auto fireable = new ListView<Employee>({width() / 2 + 10, 60, 290, 320});
+    auto fireable = new ListView<Employee>({width() / 2 + 10, 60, 290, 320}, this);
     fireable->headers({"ID", "First", "Last", "Job"}).header_font(header_font).header_height(30);
     fireable->item_font(normal_font).item_height(20);
     fireable->column_ratios({1, 3, 3, 4}).margins(Margins(10));
@@ -176,17 +169,14 @@ void DemoApplication::init_listview()
         if (index != -1)
             employed.toggle_select(index);
     });
-    add_item(fireable);
 }
 
 void DemoApplication::init_buttons() {
-    auto button_hire = new TextButton({20, 400, 290, 60});
-    button_hire->text("Hire").font(header_font);
-    add_item(button_hire);
+    auto button_hire = new TextButton({20, 400, 290, 60}, this);
+    button_hire->text("Hire", header_font);
     
-    auto button_fire = new TextButton({width() / 2 + 10, 400, 290, 60});
-    button_fire->text("Fire").font(header_font);
-    add_item(button_fire);
+    auto button_fire = new TextButton({width() / 2 + 10, 400, 290, 60}, this);
+    button_fire->text("Fire", header_font);
     
     button_hire->on_clicked([this](MouseEvent const&)
     {

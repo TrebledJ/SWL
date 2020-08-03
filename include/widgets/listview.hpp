@@ -63,19 +63,21 @@ template<class T, typename = typename std::enable_if<std::is_base_of<ListItem, T
 class ListView;
 
 template<class T>
+    /* requires derived_from<T, ListItem> */
 class ListView<T> : public DataView<T>
 {
+    using Super = DataView<T>;
 public:
     /// constructors:
-    ListView() noexcept;
-    ListView(SDL_Rect const&) noexcept;
-    ListView(ListView&&) noexcept;
+    ListView(Canvas* parent = nullptr) noexcept;
+    ListView(SDL_Rect const&, Canvas* parent = nullptr) noexcept;
+    ListView(ListView&&) = delete;
 
     /// destructors:
     ~ListView();
     
     /// assignment:
-    ListView& operator= (ListView&&) noexcept;
+    ListView& operator= (ListView&&) = delete;
 
     /// modifiers:
     ListView& headers(std::vector<std::string> const& headers);
@@ -131,35 +133,22 @@ private:
 
 /// constructors:
 template<class T>
-inline ListView<T>::ListView() noexcept
-    : ListView<T>({0, 0, 0, 0})
+inline ListView<T>::ListView(Canvas* parent) noexcept
+    : ListView<T>({0, 0, 0, 0}, parent)
 {
 }
 template<class T>
-inline ListView<T>::ListView(SDL_Rect const& dimensions) noexcept
-    : DataView<T>(dimensions)
+inline ListView<T>::ListView(SDL_Rect const& dimensions, Canvas* parent) noexcept
+    : Super(dimensions, parent)
     , m_header_height{60}
     , m_selection_color{Colors::LIGHT_GREEN}
     , m_draw_item_borders{false}
 {
 }
-template<class T>
-inline ListView<T>::ListView(ListView&& other) noexcept : DataView<T>{std::move(other)}
-{
-    swap_members(other);
-}
 
 /// destructor:
 template<class T>
 inline ListView<T>::~ListView() = default;
-
-/// assignment:
-template<class T>
-inline ListView<T>& ListView<T>::operator= (ListView&& other) noexcept
-{
-    swap(other);
-    return *this;
-}
 
 /// modifiers:
 template<class T>
@@ -179,14 +168,14 @@ inline ListView<T>& ListView<T>::draw_item_borders(bool draw) { m_draw_item_bord
 template<class T>
 inline bool ListView<T>::is_visible() const
 {
-    return DataView<T>::is_visible() && !m_header_font.expired();
+    return Super::is_visible() && !m_header_font.expired();
 }
 
 /// GUI functions:
 template<class T>
 bool ListView<T>::render(Renderer const& renderer) const
 {
-    if (!Button::render(renderer))
+    if (!Super::render(renderer))
         return false;
     
     render_head(renderer);

@@ -25,6 +25,8 @@
 #include "sdl_inc.hpp"
 
 
+class Canvas;
+
 /**
  * @brief   A basic item, the backbone of all widgets
  *
@@ -36,17 +38,17 @@ class WidgetItem
 {
 public:
     /// constructors:
-    WidgetItem() noexcept;
-    WidgetItem(SDL_Rect const&) noexcept;
-    WidgetItem(WidgetItem const&) noexcept;
-    WidgetItem(WidgetItem&&) noexcept;
+    WidgetItem(Canvas* parent = nullptr) noexcept;
+    WidgetItem(SDL_Rect const& dimensions, Canvas* parent = nullptr) noexcept;
+    WidgetItem(WidgetItem const&) = delete;
+    WidgetItem(WidgetItem&&);
     
     /// destructor:
     virtual ~WidgetItem();
     
     /// assignment:
-    WidgetItem& operator= (WidgetItem const&) noexcept;
-    WidgetItem& operator= (WidgetItem&&) noexcept;
+    WidgetItem& operator= (WidgetItem const&) = delete;
+    WidgetItem& operator= (WidgetItem&&) = delete;
     
     /// modifiers:
     WidgetItem& pos(int x, int y);
@@ -69,6 +71,9 @@ public:
     Size size() const;
     SDL_Rect dimensions() const;
     
+    /// @return true if the item is enabled, otherwise false
+    bool is_enabled() const;
+    
     /**
      * @return  true if the button should be displayed/interacted with,
      *          false otherwise
@@ -88,16 +93,14 @@ public:
      *          handle_mouse_event() and handle_wheel_event()).
      *          Other events are handled here.
      * @return  true if the event was handled, false otherwise.
-     *          For mouse events, an event is "handled" if the item is visible.
+     *          For mouse/wheel events, an event is "handled" if the item is visible.
      *          For key events, an event is "handled" if the item responds to the key.
      *
      * On a normal basis, these function doesn't need to be overrided.
-     * Override only when needed.
+     * Override only when needed
      *  (to introduce different interactive behaviours, delegating to children, etc.).
      *
-     * See Button for an example of overriding handle_mouse_event()
-     *  and Canvas for an example of overriding both events.
-     *
+     * See Canvas for an example of overriding handle_mouse_event() and handle_wheel_event().
      */
     virtual bool handle_mouse_event(MouseEvent const&);
     virtual bool handle_wheel_event(WheelEvent const&);
@@ -124,28 +127,18 @@ public:
     
 protected:
     SDL_Rect m_dimensions;
+    Canvas* m_parent;   //  weak pointer
     bool m_visible;     //  whether an item should be seen
     bool m_enabled;     //  whether an item should be able to interact with (useful for buttons)
+    
+protected:
+    virtual void add_to_parent();
+//    void remove_from_parent();
 };
 
 
-/// constructors:
-inline WidgetItem::WidgetItem() noexcept : WidgetItem(SDL_Rect{0}) {}
-inline WidgetItem::WidgetItem(SDL_Rect const& dimensions) noexcept : m_dimensions{dimensions}, m_visible{true}, m_enabled{true} {}
-inline WidgetItem::WidgetItem(WidgetItem const&) noexcept = default;
-inline WidgetItem::WidgetItem(WidgetItem&& item) noexcept { swap(item); item.m_visible = false; }
-
 /// destructor:
 inline WidgetItem::~WidgetItem() = default;
-
-/// assignment:
-inline WidgetItem& WidgetItem::operator= (WidgetItem const&) noexcept = default;
-inline WidgetItem& WidgetItem::operator= (WidgetItem&& item) noexcept
-{
-    swap(item);
-    item.m_visible = false;
-    return *this;
-}
 
 /// modifiers:
 inline WidgetItem& WidgetItem::pos(int x, int y) { m_dimensions.x = x; m_dimensions.y = y; return *this; }
@@ -167,6 +160,7 @@ inline int WidgetItem::height() const { return m_dimensions.h; }
 inline Point WidgetItem::pos() const { return {x(), y()}; }
 inline Size WidgetItem::size() const { return {width(), height()}; }
 inline SDL_Rect WidgetItem::dimensions() const { return m_dimensions; }
+inline bool WidgetItem::is_enabled() const { return m_enabled; }
 inline bool WidgetItem::is_visible() const { return m_visible; }
 
 /// GUI functions:

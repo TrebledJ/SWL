@@ -12,19 +12,12 @@
 #include "widgets/listview.hpp"
 
 #include "themes.hpp"
-#include "types.hpp"
-#include "utility.hpp"
-
-#include "sdl_ttf_inc.hpp"
-#include "sdl_inc.hpp"
 
 #include <iostream>
 #include <string>
-#include <vector>
-#include <sstream>
 
 
-const std::string fontpath = "fonts/luxisr.ttf";
+const std::string fontpath = "demos/fonts/luxisr.ttf";
 
 
 enum UnitClass
@@ -100,7 +93,9 @@ int main(int argc, const char * argv[])
     {
         DemoApplication app;
         return app.run();
-    } catch (std::runtime_error& err) {
+    }
+    catch (std::runtime_error& err)
+    {
         std::cout << "An exception occurred..." << std::endl;
         std::cout << err.what() << std::endl;
     }
@@ -111,30 +106,27 @@ DemoApplication::DemoApplication()
     : Application({50, 50, 640, 480}, "Canvas Demo")
 {
     font_normal = add_font(fontpath, 18, Themes::SECONDARY);
-    font_small = add_font(fontpath, 14, Themes::SECONDARY);
+    font_small = add_font(fontpath, 13, Themes::SECONDARY);
     
     init_widgets();
 }
     
 void DemoApplication::init_widgets()
 {
-    auto title_text = new TextItem({0, 0, width(), 60});
-    title_text->text("Canvas Demo").font(font_normal).align(ALIGN_CENTER);
-    this->add_item(title_text);
+    auto title_text = new TextItem({0, 0, width(), 60}, this);
+    title_text->text("Canvas Demo", font_normal, ALIGN_CENTER);
     
     Canvas* canvas[4];
     for (int i = 0; i < 4; ++i)
     {
-        canvas[i] = new Canvas(width()/2 - 10, (height() - 60) / 2 - 10, get_renderer());
+        canvas[i] = new Canvas(width()/2 - 10, (height() - 60) / 2 - 10, get_renderer(), this);
         canvas[i]->pos(5 + (width() / 2) * (i % 2), 65 + ((height()-60) / 2) * (i / 2));
         canvas[i]->background(Themes::PRIMARY);
-        this->add_canvas(canvas[i]);
         
         //  note the position of the following items is RELATIVE to the canvas
-        auto canvas_title = new TextItem;
+        auto canvas_title = new TextItem(canvas[i]);
         canvas_title->size(canvas[i]->width(), 30);
-        canvas_title->text("Canvas " + std::to_string(i)).font(font_normal).align(ALIGN_CENTER);
-        canvas[i]->add_item(canvas_title);
+        canvas_title->text("Canvas " + std::to_string(i), font_normal, ALIGN_CENTER);
         
         if (i == 3) //  we'll save some goodies for i=3
             continue;
@@ -143,16 +135,15 @@ void DemoApplication::init_widgets()
         SDL_Color colors[3] = {Colors::RED, Colors::GREEN, Colors::ORANGE};
         for (int j = 0; j < 3; ++j)
         {
-            auto button = new TextButton;
+            auto button = new TextButton(canvas[i]);
             char id = 'A' + j;
             button->pos(5 + canvas[i]->width() * j/3, 35)
                     .size(canvas[i]->width()/3 - 10, canvas[i]->height() - 40);
             button->background(colors[j]);
-            button->text(std::string(1, id)).font(font_normal);
+            button->text(std::string(1, id), font_normal);
             if (j == 0) button->on_clicked([i, id](MouseEvent const&) { std::cout << "canvas " << i << ": button " << id << " clicked" << std::endl; });
             if (j == 1) button->on_pressed([i, id](MouseEvent const&) { std::cout << "canvas " << i << ": button " << id << " pressed" << std::endl; });
             if (j == 2) button->on_hovered([i, id](MouseEvent const&) { std::cout << "canvas " << i << ": button " << id << " hovered" << std::endl; });
-            canvas[i]->add_item(button);
         }
     }
     
@@ -167,7 +158,7 @@ void DemoApplication::init_widgets()
         });
     }
     
-    auto lview = new ListView<Unit>({5, 35, canvas[3]->width() - 10, canvas[3]->height() - 40});
+    auto lview = new ListView<Unit>({5, 35, canvas[3]->width() - 10, canvas[3]->height() - 40}, canvas[3]);
     lview->header_font(font_normal).item_font(font_small);
     lview->header_height(40).item_height(20);
     lview->headers({"Class", "HP", "Str", "Amr"}).column_ratios({2, 1, 1, 1});
@@ -183,5 +174,4 @@ void DemoApplication::init_widgets()
         }
     });
     lview->on_scrolled([canvas](WheelEvent const&) { canvas[3]->redraw(); });
-    canvas[3]->add_item(lview);
 }

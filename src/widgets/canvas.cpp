@@ -121,6 +121,8 @@ Canvas& Canvas::redraw()
 
 Canvas& Canvas::add_item(std::string const& id, WidgetItem* item)
 {
+//    if (m_named_items[id])
+//        delete m_named_items[id];
     m_named_items[id] = std::unique_ptr<WidgetItem>(item);
     return *this;
 }
@@ -133,6 +135,8 @@ Canvas& Canvas::add_item(WidgetItem* item)
 
 Canvas& Canvas::add_canvas(std::string const& id, Canvas* item)
 {
+//    if (m_named_canvas[id])
+//        delete m_named_canvas[id];
     m_named_canvas[id] = std::unique_ptr<Canvas>(item);
     return *this;
 }
@@ -141,6 +145,32 @@ Canvas& Canvas::add_canvas(Canvas* item)
 {
     m_unnamed_canvas.push_back(std::unique_ptr<Canvas>(item));
     return *this;
+}
+
+void Canvas::remove(WidgetItem* item)
+{
+    for (auto it = m_named_items.rbegin(); it != m_named_items.rend(); ++it)
+        if (it->second.get() == item)
+            m_named_items.erase(it.base());
+    for (auto it = m_named_canvas.rbegin(); it != m_named_canvas.rend(); ++it)
+        if (it->second.get() == item)
+            m_named_canvas.erase(it.base());
+    
+    std::remove_if(m_unnamed_items.begin(), m_unnamed_items.end(),
+                   [item](auto const& ptr) { return ptr.get() == item; });
+    
+    std::remove_if(m_unnamed_canvas.begin(), m_unnamed_canvas.end(),
+                   [item](auto const& ptr) { return ptr.get() == item; });
+}
+void Canvas::remove(std::string const& id)
+{
+    auto it = m_named_items.find(id);
+    if (it != m_named_items.end())
+        m_named_items.erase(it);
+    
+    auto it2 = m_named_canvas.find(id);
+    if (it2 != m_named_canvas.end())
+        m_named_canvas.erase(it2);
 }
 
 void Canvas::foreach_child(std::function<void(WidgetItem*)> f)
@@ -163,7 +193,7 @@ void Canvas::foreach_child(std::function<void(WidgetItem*)> f) const
 /// GUI functions:
 bool Canvas::handle_mouse_event(MouseEvent const& event)
 {
-    if (!RectItem::handle_mouse_event(event))
+    if (!Super::handle_mouse_event(event))
         return false;
 
     //  since canvas deals with offset'ed items, apply an offset to the event
@@ -177,7 +207,7 @@ bool Canvas::handle_mouse_event(MouseEvent const& event)
 
 bool Canvas::handle_wheel_event(WheelEvent const& event)
 {
-    if (!RectItem::handle_wheel_event(event))
+    if (!Super::handle_wheel_event(event))
         return false;
 
     for (auto& pair : m_named_items) pair.second->handle_wheel_event(event.offset(m_dimensions.x, m_dimensions.y));
@@ -243,7 +273,7 @@ void Canvas::perform_redraw(Renderer const& renderer)
 
 void Canvas::swap(Canvas& canvas) noexcept
 {
-    RectItem::swap(canvas);
+    Super::swap(canvas);
     std::swap(m_texture, canvas.m_texture);
     std::swap(m_custom_redraw, canvas.m_custom_redraw);
     std::swap(m_redraw, canvas.m_redraw);

@@ -47,14 +47,15 @@
  */
 class Canvas : public RectItem
 {
+    using Super = RectItem;
+    
 public:
     using RedrawFunc = std::function<void(Renderer const&)>;
 
 public:
     /// constructors:
     /**
-     * These constructors will NOT initialise a texture.
-     * I.e. the canvas will use a null texture.
+     * These constructors will NOT initialise a texture (i.e. the canvas will use a null texture).
      */
     Canvas(int width, int height);
     Canvas(SDL_Rect const&);
@@ -62,18 +63,18 @@ public:
     /**
      * These constructors WILL initialise a texture, using the renderer passed.
      */
-    Canvas(int width, int height, Renderer const&);
-    Canvas(SDL_Rect const&, Renderer const&);
+    Canvas(int width, int height, Renderer const&, Canvas* parent = nullptr);
+    Canvas(SDL_Rect const&, Renderer const&, Canvas* parent = nullptr);
     
     Canvas(Canvas const&) = delete;
-    Canvas(Canvas&&) noexcept;
+    Canvas(Canvas&&) = delete;
     
     /// destructors:
     virtual ~Canvas();
     
     /// assignment:
     Canvas& operator= (Canvas const&) = delete;
-    Canvas& operator= (Canvas&&) noexcept;
+    Canvas& operator= (Canvas&&) = delete;
     
     /// modifiers:
     Canvas& custom_redraw(RedrawFunc);
@@ -107,6 +108,9 @@ public:
      */
     Canvas& add_canvas(std::string const& id, Canvas*);
     Canvas& add_canvas(Canvas*);
+    
+    void remove(WidgetItem*);
+    void remove(std::string const& id);
     
     void foreach_child(std::function<void(WidgetItem*)>);
     
@@ -166,33 +170,22 @@ private:
 /// constructors:
 inline Canvas::Canvas(int width, int height) : Canvas({0, 0, width, height}) {}
 inline Canvas::Canvas(SDL_Rect const& dimensions)
-    : RectItem(dimensions)
+    : Super(dimensions)
     , m_redraw{true}
 {
 }
-inline Canvas::Canvas(int width, int height, Renderer const& renderer) : Canvas({0, 0, width, height}, renderer) {}
-inline Canvas::Canvas(SDL_Rect const& dimensions, Renderer const& renderer)
-    : RectItem(dimensions)
+inline Canvas::Canvas(int width, int height, Renderer const& renderer, Canvas* parent) : Canvas({0, 0, width, height}, renderer, parent) {}
+inline Canvas::Canvas(SDL_Rect const& dimensions, Renderer const& renderer, Canvas* parent)
+    : Super(dimensions, nullptr)
     , m_redraw{true}
     , m_texture{make_texture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, dimensions.w, dimensions.h)}
 {
-}
-inline Canvas::Canvas(Canvas&& other) noexcept
-{
-    swap(other);
-    other.m_redraw = false;
+    if ((m_parent = parent))
+        m_parent->add_canvas(this);
 }
 
 /// destructors:
 inline Canvas::~Canvas() = default;
-
-/// assignment:
-inline Canvas& Canvas::operator= (Canvas&& other) noexcept
-{
-    swap(other);
-    other.m_redraw = false;
-    return *this;
-}
 
 /// accessors:
 template<class T>

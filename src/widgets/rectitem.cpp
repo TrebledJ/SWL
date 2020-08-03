@@ -19,17 +19,21 @@
  */
 
 #include "rectitem.hpp"
+#include "themes.hpp"
 #include "utility.hpp"
 
 
+RectItem::RectItem(SDL_Rect const& dimensions, Canvas* parent) noexcept
+    : Super(dimensions, parent)
+    , m_background_color{Themes::PRIMARY}
+{
+}
+
 bool RectItem::render(Renderer const& renderer) const
 {
-    if (!WidgetItem::render(renderer))
+    if (!Super::render(renderer))
         return false;
     
-    if (m_enabled)
-        draw_filled_rect(renderer, m_dimensions, m_background_color);
-    else
-        draw_filled_rect(renderer, m_dimensions, Colors::darken(m_background_color, 0.5));
+    draw_filled_rect(renderer, m_dimensions, m_enabled ? m_background_color : Colors::darken(m_background_color, 0.5));
     return true;
 }

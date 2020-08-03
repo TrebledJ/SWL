@@ -22,11 +22,14 @@
 #define textitem_hpp
 
 #include "widgetitem.hpp"
+#include "interfaces/text.hpp"
 #include "types.hpp"
 #include "utility.hpp"
 
 #include <string>
 
+
+class Canvas;
 
 /**
  * @brief   Displays text
@@ -42,77 +45,43 @@
  *          AFTER the TextItem objects are destructed (if TTF_Quit is used at all).
  *          The Application class handles this by default.
  */
-class TextItem : public virtual WidgetItem
+class TextItem : public WidgetItem, public TextInterface
 {
+    using Super = WidgetItem;
+    
 public:
     /// constructors:
-    TextItem(Alignment = ALIGN_TOP_LEFT) noexcept;
-    TextItem(SDL_Rect const&, Alignment = ALIGN_TOP_LEFT) noexcept;
-    TextItem(TextItem const&);
-    TextItem(TextItem&&) noexcept;
+    TextItem(Canvas* parent = nullptr) noexcept;
+    TextItem(SDL_Rect const& dimensions, Canvas* parent = nullptr) noexcept;
+    TextItem(SDL_Rect const& dimensions, Alignment, Canvas* parent = nullptr) noexcept;
+    TextItem(TextItem const&) = delete;
+    TextItem(TextItem&&) = delete;
     
     /// destructor:
     virtual ~TextItem();
     
     /// assignment:
-    TextItem& operator= (TextItem const&);
-    TextItem& operator= (TextItem&&) noexcept;
-    
-    /// modifiers:
-    TextItem& font(FontRef const& font);
-    TextItem& text(std::string const& text);
-    TextItem& align(Alignment alignment);
+    TextItem& operator= (TextItem const&) = delete;
+    TextItem& operator= (TextItem&&) = delete;
     
     /// accessors:
-    std::string const& text() const;
     virtual bool is_visible() const override;
     
     /// GUI functions:
     virtual bool render(Renderer const&) const override;
-    
-    /// convenience functions:
-    void swap(TextItem&) noexcept;
-
-protected:
-    FontRef m_font;
-    std::string m_text;
-    Alignment m_alignment;
-    
-protected:
-    void swap_members(TextItem&) noexcept;
 };
 
 
 /// constructors:
-inline TextItem::TextItem(Alignment alignment) noexcept : TextItem({0, 0, 0, 0}, alignment) {}
-inline TextItem::TextItem(SDL_Rect const& rect, Alignment alignment) noexcept : WidgetItem(rect), m_alignment{alignment} {}
-inline TextItem::TextItem(TextItem const&) = default;
-inline TextItem::TextItem(TextItem&& item) noexcept : TextItem{}
-{
-    swap(item);
-    item.m_font.reset();
-}
+inline TextItem::TextItem(Canvas* parent) noexcept : TextItem({0, 0, 0, 0}, ALIGN_TOP_LEFT, parent) {}
+inline TextItem::TextItem(SDL_Rect const& dimensions, Canvas* parent) noexcept : TextItem(dimensions, ALIGN_TOP_LEFT, parent) {}
+inline TextItem::TextItem(SDL_Rect const& dimensions, Alignment alignment, Canvas* parent) noexcept : Super(dimensions, parent), TextInterface(alignment) {}
 
 /// destructor:
 inline TextItem::~TextItem() = default;
 
-/// assignment:
-inline TextItem& TextItem::operator= (TextItem const&) = default;
-inline TextItem& TextItem::operator= (TextItem&& item) noexcept
-{
-    swap(item);
-    item.m_font.reset();
-    return *this;
-}
-
-/// modifiers:
-inline TextItem& TextItem::font(FontRef const& font) { m_font = font; return *this; }
-inline TextItem& TextItem::text(std::string const& text) { m_text = text; return *this; }
-inline TextItem& TextItem::align(Alignment alignment) { m_alignment = alignment; return *this; }
-
 /// accessors:
-inline std::string const& TextItem::text() const { return m_text; }
-inline bool TextItem::is_visible() const { return WidgetItem::is_visible() && !m_font.expired(); }
+inline bool TextItem::is_visible() const { return Super::is_visible() && !m_font.expired(); }
 
 
 #endif

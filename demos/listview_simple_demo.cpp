@@ -12,18 +12,12 @@
 #include "widgets/textitem.hpp"
 
 #include "themes.hpp"
-#include "types.hpp"
-#include "utility.hpp"
-
-#include "sdl_ttf_inc.hpp"
-#include "sdl_inc.hpp"
 
 #include <iostream>
 #include <string>
-#include <vector>
 
 
-const std::string fontpath = "fonts/luxisr.ttf";
+const std::string fontpath = "demos/fonts/luxisr.ttf";
 const unsigned NUM_LIST_ITEMS = 50;
 
 
@@ -79,7 +73,9 @@ int main(int argc, const char * argv[])
     {
         DemoApplication app;
         return app.run();
-    } catch (std::runtime_error& err) {
+    }
+    catch (std::runtime_error& err)
+    {
         std::cout << "An exception occurred..." << std::endl;
         std::cout << err.what() << std::endl;
     }
@@ -96,9 +92,8 @@ DemoApplication::DemoApplication()
     
 void DemoApplication::init_listview()
 {
-    auto title_text = new TextItem({0, 0, width(), 60});
-    title_text->text("Employees").font(header_font).align(ALIGN_CENTER);
-    add_item(title_text);
+    auto title_text = new TextItem({0, 0, width(), 60}, this);
+    title_text->text("Employees", header_font, ALIGN_CENTER);
     
     //  here the initialiser lists are implicitly convert to the type used by
     //  the listview, saving the lives of many finger joints
@@ -121,12 +116,13 @@ void DemoApplication::init_listview()
                 .add({17,"Pikachu",  "",         "Cute Lightning Mouse"})
                 .add({18,"Tony",     "Stark",    "Fly Guy"})
                 .add({19,"Captain",  "Hook",     "Cartoon Antagonist"});
-    for (auto i = 21; i <= NUM_LIST_ITEMS; ++i)
+    for (auto i = 20; i <= NUM_LIST_ITEMS; ++i)
     {
+        //  let's add something random
         employees.add({i, std::string(3, 'A'+i%26), std::string(3, 'a'+i%26), std::string(1, '0'+i%10)});
     }
 
-    auto listview = new ListView<Employee>({20, 60, 600, 300});
+    auto listview = new ListView<Employee>({20, 60, 600, 300}, this);
     listview->headers({"ID", "First", "Last", "Job"}).header_font(header_font).header_height(30);
     listview->item_font(normal_font).item_height(20);
     listview->column_ratios({1, 2, 2, 4}).margins(Margins(10));
@@ -137,9 +133,10 @@ void DemoApplication::init_listview()
     {
         if (index >= 0)
         {
-            std::cout << "index " << index << " clicked" << std::endl;
+            const auto& e = employees.at(index);
             employees.toggle_select(index);
+            
+            std::cout << e.first_name << (e.last_name.empty() ? "" : " " + e.last_name) << " (index " << index << ") " << (e.selected ? "selected" : "unselected") << std::endl;
         }
     });
-    add_item(listview);
 }

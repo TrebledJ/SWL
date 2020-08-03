@@ -18,17 +18,30 @@
  *
  */
 
-#include "textbutton.hpp"
+#include "widgets/textbutton.hpp"
 
 #include "themes.hpp"
 #include "utility.hpp"
 
-#include "sdl_inc.hpp"
 
-
-/// convenience functions:
-void TextButton::swap(TextButton& button) noexcept
+/// GUI functions:
+bool TextButton::handle_mouse_event(MouseEvent const& event)
 {
-    Button::swap(button);           //  swaps Item + Button members
-    TextItem::swap_members(button); //  swaps only TextItem members
+    //  filter events by relying on parent function
+    if (!Super::handle_mouse_event(event))
+        return false;
+    
+    ButtonInterface::handle(event);
+    return true;
 }
+
+bool TextButton::render(Renderer const& renderer) const
+{
+    //  draw button before text
+    if (!Super::render(renderer))
+        return false;
+    
+    draw_text(renderer, m_dimensions, m_font.lock(), text(), m_alignment);
+    return true;
+}
+
