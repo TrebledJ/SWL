@@ -53,8 +53,8 @@ public:
 
 public:
     /// constructors:
-    DataView(Canvas* parent = nullptr) noexcept;
-    DataView(SDL_Rect const&, Canvas* parent = nullptr) noexcept;
+    DataView(Canvas* parent = nullptr, std::string const& id = "") noexcept;
+    DataView(SDL_Rect const&, Canvas* parent = nullptr, std::string const& id = "") noexcept;
 
     //  copy-ctor and copy-asgn are deleted so that properties are EXPLICIT
     //  (either from move funcs or modifiers) and so that there will be no
@@ -139,13 +139,13 @@ private:
 
 /// constructors:
 template<class T>
-inline DataView<T>::DataView(Canvas* parent) noexcept
-    : DataView<T>({0, 0, 0, 0}, parent)
+inline DataView<T>::DataView(Canvas* parent, std::string const& id) noexcept
+    : DataView<T>({0, 0, 0, 0}, parent, id)
 {
 }
 template<class T>
-inline DataView<T>::DataView(SDL_Rect const& dimensions, Canvas* parent) noexcept
-    : Super(dimensions, parent)
+inline DataView<T>::DataView(SDL_Rect const& dimensions, Canvas* parent, std::string const& id) noexcept
+    : Super(dimensions, parent, id)
     , m_model{nullptr}
     , m_item_height{40}
     , m_display_index{0}

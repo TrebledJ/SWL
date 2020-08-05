@@ -38,8 +38,8 @@ class WidgetItem
 {
 public:
     /// constructors:
-    WidgetItem(Canvas* parent = nullptr) noexcept;
-    WidgetItem(SDL_Rect const& dimensions, Canvas* parent = nullptr) noexcept;
+    WidgetItem(Canvas* parent = nullptr, std::string const& id = "") noexcept;
+    WidgetItem(SDL_Rect const& dimensions, Canvas* parent = nullptr, std::string const& id = "") noexcept;
     WidgetItem(WidgetItem const&) = delete;
     WidgetItem(WidgetItem&&);
     
@@ -132,7 +132,7 @@ protected:
     bool m_enabled;     //  whether an item should be able to interact with (useful for buttons)
     
 protected:
-    virtual void add_to_parent();
+//    virtual void add_to_parent();
 //    void remove_from_parent();
 };
 

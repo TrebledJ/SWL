@@ -23,8 +23,8 @@
 #include "utility.hpp"
 
 
-RectItem::RectItem(SDL_Rect const& dimensions, Canvas* parent) noexcept
-    : Super(dimensions, parent)
+RectItem::RectItem(SDL_Rect const& dimensions, Canvas* parent, std::string const& id) noexcept
+    : Super(dimensions, parent, id)
     , m_background_color{Themes::PRIMARY}
 {
 }

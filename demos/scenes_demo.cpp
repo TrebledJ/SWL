@@ -74,8 +74,7 @@ DemoApplication::DemoApplication()
 
 void DemoApplication::init_widgets()
 {
-    auto title_text = new TextItem({0, 0, width(), 60});
-    this->add_item("title-text", title_text);
+    auto title_text = new TextItem({0, 0, width(), 60}, this, "title-text");
     title_text->text("Scenes Demo", font, ALIGN_CENTER);
     
     init_menu();
@@ -84,8 +83,7 @@ void DemoApplication::init_widgets()
 
 void DemoApplication::init_menu()
 {
-    auto menu_scene = new Canvas(width(), height(), get_renderer());
-    this->add_canvas("menu-scene", menu_scene);
+    auto menu_scene = new Canvas(width(), height(), get_renderer(), this, "menu-scene");
     menu_scene->background(Themes::BACKGROUND);
     
     constexpr int NUM_BUTTONS = 4;
@@ -112,8 +110,7 @@ void DemoApplication::init_menu()
 
 void DemoApplication::init_main()
 {
-    auto main_scene = new Canvas(width(), height(), get_renderer());
-    this->add_canvas("main-scene", main_scene);
+    auto main_scene = new Canvas(width(), height(), get_renderer(), this, "main-scene");
     main_scene->background(Themes::BACKGROUND);
     
     constexpr int NUM_BUTTONS = 5;

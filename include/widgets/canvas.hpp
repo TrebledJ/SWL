@@ -63,8 +63,8 @@ public:
     /**
      * These constructors WILL initialise a texture, using the renderer passed.
      */
-    Canvas(int width, int height, Renderer const&, Canvas* parent = nullptr);
-    Canvas(SDL_Rect const&, Renderer const&, Canvas* parent = nullptr);
+    Canvas(int width, int height, Renderer const&, Canvas* parent = nullptr, std::string const& id = "");
+    Canvas(SDL_Rect const&, Renderer const&, Canvas* parent = nullptr, std::string const& id = "");
     
     Canvas(Canvas const&) = delete;
     Canvas(Canvas&&) = delete;
@@ -174,14 +174,14 @@ inline Canvas::Canvas(SDL_Rect const& dimensions)
     , m_redraw{true}
 {
 }
-inline Canvas::Canvas(int width, int height, Renderer const& renderer, Canvas* parent) : Canvas({0, 0, width, height}, renderer, parent) {}
-inline Canvas::Canvas(SDL_Rect const& dimensions, Renderer const& renderer, Canvas* parent)
-    : Super(dimensions, nullptr)
+inline Canvas::Canvas(int width, int height, Renderer const& renderer, Canvas* parent, std::string const& id) : Canvas({0, 0, width, height}, renderer, parent, id) {}
+inline Canvas::Canvas(SDL_Rect const& dimensions, Renderer const& renderer, Canvas* parent, std::string const& id)
+    : Super(dimensions)
     , m_redraw{true}
     , m_texture{make_texture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, dimensions.w, dimensions.h)}
 {
     if ((m_parent = parent))
-        m_parent->add_canvas(this);
+        m_parent->add_canvas(id, this);
 }
 
 /// destructors:

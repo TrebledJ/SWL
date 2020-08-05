@@ -108,7 +108,7 @@ void DemoApplication::init_menu_view()
         menu_model.add("C");
     }
     
-    auto menu_view = new MenuView({width() - 180, 0, 180, height()});
+    auto menu_view = new MenuView({width() - 180, 0, 180, height()}, this, "menu-view");
     menu_view->item_font(font).item_height(30);
     menu_view->margins(Margins(10));
     menu_view->model(&menu_model);
@@ -133,12 +133,11 @@ void DemoApplication::init_menu_view()
             update();
         }
     });
-    this->add_item("menu-view", menu_view);
 }
 
 void DemoApplication::init_buttons()
 {
-    auto target_button = new TextButton({child("menu-view")->x() / 2 - 100, 120, 200, 40});
+    auto target_button = new TextButton({child("menu-view")->x() / 2 - 100, 120, 200, 40}, this, "target-button");
     target_button->background(Themes::PRIMARY);
     target_button->text("", font);
     target_button->on_left_clicked([this](MouseEvent const& event)
@@ -147,7 +146,7 @@ void DemoApplication::init_buttons()
         update();
     });
     
-    auto in_button = new TextButton({child("menu-view")->x() / 2 - 100, 170, 95, 40});
+    auto in_button = new TextButton({child("menu-view")->x() / 2 - 100, 170, 95, 40}, this, "in-button");
     in_button->background(Themes::PRIMARY);
     in_button->text("In", font);
     in_button->on_left_clicked([this](MouseEvent const& event)
@@ -160,7 +159,7 @@ void DemoApplication::init_buttons()
         }
     });
     
-    auto out_button = new TextButton({child("menu-view")->x() / 2 + 5, 170, 95, 40});
+    auto out_button = new TextButton({child("menu-view")->x() / 2 + 5, 170, 95, 40}, this, "out-button");
     out_button->text("Out", font);
     out_button->on_left_clicked([this](MouseEvent const& event)
     {
@@ -172,7 +171,7 @@ void DemoApplication::init_buttons()
         }
     });
     
-    auto add_button = new TextButton({child("menu-view")->x() / 2 - 100, 220, 200, 40});
+    auto add_button = new TextButton({child("menu-view")->x() / 2 - 100, 220, 200, 40}, this, "add-button");
     add_button->text("Add", font);
     add_button->on_left_clicked([this](MouseEvent const& event)
     {
@@ -183,7 +182,7 @@ void DemoApplication::init_buttons()
         update();
     });
     
-    auto clear_button = new TextButton({child("menu-view")->x() / 2 - 100, 270, 200, 40});
+    auto clear_button = new TextButton({child("menu-view")->x() / 2 - 100, 270, 200, 40}, this, "clear-button");
     clear_button->text("Clear", font);
     clear_button->on_left_clicked([this](MouseEvent const& event)
     {
@@ -193,12 +192,6 @@ void DemoApplication::init_buttons()
             menu_model.node_at(index)->clear();
         update();
     });
-    
-    this->add_item("target-button", target_button);
-    this->add_item("in-button", in_button);
-    this->add_item("out-button", out_button);
-    this->add_item("add-button", add_button);
-    this->add_item("clear-button", clear_button);
     
     update();
 }

@@ -26,14 +26,19 @@
 
 
 /// constructors:
-WidgetItem::WidgetItem(Canvas* parent) noexcept : WidgetItem(SDL_Rect{0}, parent) {}
-WidgetItem::WidgetItem(SDL_Rect const& dimensions, Canvas* parent) noexcept
+WidgetItem::WidgetItem(Canvas* parent, std::string const& id) noexcept
+    : WidgetItem(SDL_Rect{0}, parent, id)
+{
+}
+WidgetItem::WidgetItem(SDL_Rect const& dimensions, Canvas* parent, std::string const& id) noexcept
     : m_dimensions(dimensions)
     , m_parent(parent)
     , m_visible(true)
     , m_enabled(true)
 {
-    this->add_to_parent();
+    if (parent)
+        parent->add_item(id, this);
+//    this->add_to_parent();
 }
 
 /// convenience functions:
@@ -46,11 +51,11 @@ void WidgetItem::swap(WidgetItem& item) noexcept
     swap(m_enabled, item.m_enabled);
 }
 
-void WidgetItem::add_to_parent()
-{
-    if (m_parent)
-        m_parent->add_item(this);
-}
+//void WidgetItem::add_to_parent()
+//{
+//    if (m_parent)
+//        m_parent->add_item(this);
+//}
 
 //void WidgetItem::remove_from_parent()
 //{

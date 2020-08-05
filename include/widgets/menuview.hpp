@@ -27,19 +27,23 @@
 #include <string>
 
 
+class Canvas;
+
 class MenuView : public DataView<std::string>
 {
+    using Super = DataView<std::string>;
+    
 public:
-    MenuView() noexcept;
-    MenuView(SDL_Rect const&) noexcept;
+    MenuView(Canvas* parent = nullptr, std::string const& id = "") noexcept;
+    MenuView(SDL_Rect const&, Canvas* parent = nullptr, std::string const& id = "") noexcept;
     
 private:
     virtual void render_item(Renderer const&, std::string const& item_text, SDL_Rect const& bounds) const override;
 };
 
 
-inline MenuView::MenuView() noexcept : MenuView({0, 0, 0, 0}) {}
-inline MenuView::MenuView(SDL_Rect const& dimensions) noexcept : DataView<std::string>(dimensions) {}
+inline MenuView::MenuView(Canvas* parent, std::string const& id) noexcept : MenuView({0, 0, 0, 0}, parent, id) {}
+inline MenuView::MenuView(SDL_Rect const& dimensions, Canvas* parent, std::string const& id) noexcept : Super(dimensions, parent, id) {}
 
 inline void MenuView::render_item(Renderer const& renderer, std::string const& item_text, SDL_Rect const& bounds) const
 {

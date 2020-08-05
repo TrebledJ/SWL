@@ -121,9 +121,8 @@ Canvas& Canvas::redraw()
 
 Canvas& Canvas::add_item(std::string const& id, WidgetItem* item)
 {
-//    if (m_named_items[id])
-//        delete m_named_items[id];
-    m_named_items[id] = std::unique_ptr<WidgetItem>(item);
+    if (id.empty()) add_item(item);
+    else m_named_items[id] = std::unique_ptr<WidgetItem>(item);
     return *this;
 }
 
@@ -135,9 +134,8 @@ Canvas& Canvas::add_item(WidgetItem* item)
 
 Canvas& Canvas::add_canvas(std::string const& id, Canvas* item)
 {
-//    if (m_named_canvas[id])
-//        delete m_named_canvas[id];
-    m_named_canvas[id] = std::unique_ptr<Canvas>(item);
+    if (id.empty()) add_canvas(item);
+    else m_named_canvas[id] = std::unique_ptr<Canvas>(item);
     return *this;
 }
 
