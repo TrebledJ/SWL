@@ -127,13 +127,9 @@ public:
     
 protected:
     SDL_Rect m_dimensions;
-    Canvas* m_parent;   //  weak pointer
+    Canvas* m_parent;   //  weak pointer    //  TODO: storing this here for now (might be useful for defining move semantics later)
     bool m_visible;     //  whether an item should be seen
     bool m_enabled;     //  whether an item should be able to interact with (useful for buttons)
-    
-protected:
-//    virtual void add_to_parent();
-//    void remove_from_parent();
 };
 
 

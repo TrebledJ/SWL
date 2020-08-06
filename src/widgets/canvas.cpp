@@ -47,7 +47,7 @@
  */
 class TargetWrapper
 {
-    Renderer const& m_renderer;
+    Renderer const&  m_renderer;
     SDL_Texture* m_prev_target;
     bool m_target_ok;  //  TODO: change to C++17 std::optional
     
@@ -122,70 +122,61 @@ Canvas& Canvas::redraw()
 Canvas& Canvas::add_item(std::string const& id, WidgetItem* item)
 {
     if (id.empty()) add_item(item);
-    else m_named_items[id] = std::unique_ptr<WidgetItem>(item);
+    else m_items[id] = std::unique_ptr<WidgetItem>(item);
     return *this;
 }
 
 Canvas& Canvas::add_item(WidgetItem* item)
 {
-    m_unnamed_items.push_back(std::unique_ptr<WidgetItem>(item));
+    m_items[std::to_string(m_counter++)] = std::unique_ptr<WidgetItem>(item);
     return *this;
 }
 
 Canvas& Canvas::add_canvas(std::string const& id, Canvas* item)
 {
     if (id.empty()) add_canvas(item);
-    else m_named_canvas[id] = std::unique_ptr<Canvas>(item);
+    else m_canvases[id] = std::unique_ptr<Canvas>(item);
     return *this;
 }
 
 Canvas& Canvas::add_canvas(Canvas* item)
 {
-    m_unnamed_canvas.push_back(std::unique_ptr<Canvas>(item));
+    m_canvases[std::to_string(m_counter++)] = std::unique_ptr<Canvas>(item);
     return *this;
 }
 
 void Canvas::remove(WidgetItem* item)
 {
-    for (auto it = m_named_items.rbegin(); it != m_named_items.rend(); ++it)
+    for (auto it = m_items.rbegin(); it != m_items.rend(); ++it)
         if (it->second.get() == item)
-            m_named_items.erase(it.base());
-    for (auto it = m_named_canvas.rbegin(); it != m_named_canvas.rend(); ++it)
+            m_items.erase(it.base());
+    for (auto it = m_canvases.rbegin(); it != m_canvases.rend(); ++it)
         if (it->second.get() == item)
-            m_named_canvas.erase(it.base());
-    
-    std::remove_if(m_unnamed_items.begin(), m_unnamed_items.end(),
-                   [item](auto const& ptr) { return ptr.get() == item; });
-    
-    std::remove_if(m_unnamed_canvas.begin(), m_unnamed_canvas.end(),
-                   [item](auto const& ptr) { return ptr.get() == item; });
+            m_canvases.erase(it.base());
 }
+
 void Canvas::remove(std::string const& id)
 {
-    auto it = m_named_items.find(id);
-    if (it != m_named_items.end())
-        m_named_items.erase(it);
+    const auto it = m_items.find(id);
+    if (it != m_items.end())
+        m_items.erase(it);
     
-    auto it2 = m_named_canvas.find(id);
-    if (it2 != m_named_canvas.end())
-        m_named_canvas.erase(it2);
+    const auto it2 = m_canvases.find(id);
+    if (it2 != m_canvases.end())
+        m_canvases.erase(it2);
 }
 
 void Canvas::foreach_child(std::function<void(WidgetItem*)> f)
 {
-    for (auto& pair : m_named_items) f(pair.second.get());
-    for (auto& pair : m_named_canvas) f(pair.second.get());
-    for (auto& child : m_unnamed_items) f(child.get());
-    for (auto& child : m_unnamed_canvas) f(child.get());
+    for (auto& pair : m_items) f(pair.second.get());
+    for (auto& pair : m_canvases) f(pair.second.get());
 }
 
 /// accessors:
 void Canvas::foreach_child(std::function<void(WidgetItem*)> f) const
 {
-    for (auto const& pair : m_named_items) f(pair.second.get());
-    for (auto const& pair : m_named_canvas) f(pair.second.get());
-    for (auto const& child : m_unnamed_items) f(child.get());
-    for (auto const& child : m_unnamed_canvas) f(child.get());
+    for (auto const& pair : m_items) f(pair.second.get());
+    for (auto const& pair : m_canvases) f(pair.second.get());
 }
 
 /// GUI functions:
@@ -195,10 +186,8 @@ bool Canvas::handle_mouse_event(MouseEvent const& event)
         return false;
 
     //  since canvas deals with offset'ed items, apply an offset to the event
-    for (auto& pair : m_named_items) pair.second->handle_mouse_event(event.offset(m_dimensions.x, m_dimensions.y));
-    for (auto& pair : m_named_canvas) pair.second->handle_mouse_event(event.offset(m_dimensions.x, m_dimensions.y));
-    for (auto& child : m_unnamed_items) child->handle_mouse_event(event.offset(m_dimensions.x, m_dimensions.y));
-    for (auto& child : m_unnamed_canvas) child->handle_mouse_event(event.offset(m_dimensions.x, m_dimensions.y));
+    for (auto& pair : m_items) pair.second->handle_mouse_event(event.offset(m_dimensions.x, m_dimensions.y));
+    for (auto& pair : m_canvases) pair.second->handle_mouse_event(event.offset(m_dimensions.x, m_dimensions.y));
     
     return true;
 }
@@ -208,23 +197,17 @@ bool Canvas::handle_wheel_event(WheelEvent const& event)
     if (!Super::handle_wheel_event(event))
         return false;
 
-    for (auto& pair : m_named_items) pair.second->handle_wheel_event(event.offset(m_dimensions.x, m_dimensions.y));
-    for (auto& pair : m_named_canvas) pair.second->handle_wheel_event(event.offset(m_dimensions.x, m_dimensions.y));
-    for (auto& child : m_unnamed_items) child->handle_wheel_event(event.offset(m_dimensions.x, m_dimensions.y));
-    for (auto& child : m_unnamed_canvas) child->handle_wheel_event(event.offset(m_dimensions.x, m_dimensions.y));
+    for (auto& pair : m_items) pair.second->handle_wheel_event(event.offset(m_dimensions.x, m_dimensions.y));
+    for (auto& pair : m_canvases) pair.second->handle_wheel_event(event.offset(m_dimensions.x, m_dimensions.y));
 
     return true;
 }
 
 void Canvas::update(Renderer const& renderer)
 {
-    for (auto& pair : m_named_canvas)
+    for (auto& pair : m_canvases)
         if (pair.second->is_visible())
             pair.second->update(renderer);
-    
-    for (auto& child : m_unnamed_canvas)
-        if (child->is_visible())
-            child->update(renderer);
     
     if (m_redraw)
     {
@@ -246,10 +229,8 @@ bool Canvas::render(Renderer const& renderer) const
 
 void Canvas::render_children(Renderer const& renderer) const
 {
-    for (auto const& pair : m_named_items) pair.second->render(renderer);
-    for (auto const& pair : m_named_canvas) pair.second->render(renderer);
-    for (auto const& child : m_unnamed_items) child->render(renderer);
-    for (auto const& child : m_unnamed_canvas) child->render(renderer);
+    for (auto const& pair : m_items) pair.second->render(renderer);
+    for (auto const& pair : m_canvases) pair.second->render(renderer);
 }
 
 /// helper functions:
@@ -275,8 +256,6 @@ void Canvas::swap(Canvas& canvas) noexcept
     std::swap(m_texture, canvas.m_texture);
     std::swap(m_custom_redraw, canvas.m_custom_redraw);
     std::swap(m_redraw, canvas.m_redraw);
-    std::swap(m_named_items, canvas.m_named_items);
-    std::swap(m_named_canvas, canvas.m_named_canvas);
-    std::swap(m_unnamed_items, canvas.m_unnamed_items);
-    std::swap(m_unnamed_canvas, canvas.m_unnamed_canvas);
+    std::swap(m_items, canvas.m_items);
+    std::swap(m_canvases, canvas.m_canvases);
 }

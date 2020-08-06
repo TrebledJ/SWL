@@ -38,7 +38,6 @@ WidgetItem::WidgetItem(SDL_Rect const& dimensions, Canvas* parent, std::string c
 {
     if (parent)
         parent->add_item(id, this);
-//    this->add_to_parent();
 }
 
 /// convenience functions:
@@ -50,18 +49,3 @@ void WidgetItem::swap(WidgetItem& item) noexcept
     swap(m_visible, item.m_visible);
     swap(m_enabled, item.m_enabled);
 }
-
-//void WidgetItem::add_to_parent()
-//{
-//    if (m_parent)
-//        m_parent->add_item(this);
-//}
-
-//void WidgetItem::remove_from_parent()
-//{
-//    if (m_parent)
-//    {
-//        m_parent->remove(this);
-//        m_parent = nullptr;
-//    }
-//}

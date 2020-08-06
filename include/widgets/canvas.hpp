@@ -150,10 +150,9 @@ private:
     bool m_redraw;   //  whether canvas will redraw next render or not
     
     //  child widgets stored here will be rendered relative to the Canvas
-    std::map<std::string, std::unique_ptr<WidgetItem>> m_named_items;
-    std::map<std::string, std::unique_ptr<Canvas>> m_named_canvas;
-    std::list<std::unique_ptr<WidgetItem>> m_unnamed_items;
-    std::list<std::unique_ptr<Canvas>> m_unnamed_canvas;
+    std::map<std::string, std::unique_ptr<WidgetItem>> m_items;
+    std::map<std::string, std::unique_ptr<Canvas>> m_canvases;
+    unsigned long long m_counter = 0; //  for generating names for unnamed children
     
 private:
     /// helper functions:
@@ -191,12 +190,12 @@ inline Canvas::~Canvas() = default;
 template<class T>
 T* Canvas::child(std::string const& id) const
 {
-    auto item_it = m_named_items.find(id);
-    if (item_it != m_named_items.end())
+    const auto item_it = m_items.find(id);
+    if (item_it != m_items.end())
         return dynamic_cast<T*>(item_it->second.get());
     
-    auto canvas_it = m_named_canvas.find(id);
-    if (canvas_it != m_named_canvas.end())
+    const auto canvas_it = m_canvases.find(id);
+    if (canvas_it != m_canvases.end())
         return dynamic_cast<T*>(canvas_it->second.get());
     
     return nullptr;

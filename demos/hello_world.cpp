@@ -11,8 +11,7 @@ int main()
     auto font = app.add_font("demos/fonts/luxisr.ttf", 12, Themes::SECONDARY);
     auto button = new TextButton({app.width() / 2 - 60, app.height() / 2 - 40, 120, 80}, &app);
     
-    button->text("Hello World!");
-    button->font(font);
+    button->text("Hello World!", font);
     button->on_clicked([](MouseEvent const&) { std::cout << "button clicked!" << std::endl; });
     
     return app.run();
