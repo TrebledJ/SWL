@@ -52,6 +52,9 @@ public:
     /// accessors:
     virtual std::string const& text() const;
     
+    /// @brief  Returns whether the whole text thing is valid (basically here, tests if font is not null)
+    bool is_valid() const;
+    
 protected:
     std::string m_text;
     FontRef m_font;
@@ -82,6 +85,7 @@ inline void TextInterface::align(Alignment alignment) { m_alignment = alignment;
 
 /// accessors:
 inline std::string const& TextInterface::text() const { return m_text; }
+inline bool TextInterface::is_valid() const { return !m_font.expired(); }
 
 
 #endif /* textinterface_hpp */

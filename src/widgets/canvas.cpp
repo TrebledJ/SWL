@@ -97,12 +97,42 @@ TargetWrapper::operator Renderer const&() const
     return m_renderer;
 }
 
+
 /*-- class Canvas --*/
+using namespace std::placeholders;
+
+#define findmove(from, to)  \
+    {\
+        auto it = from.find(id);\
+        if (it != from.end())\
+        {\
+            /* insert item into target container */\
+            to[it->first] = std::move(it->second);\
+            \
+            /* remove item from first container */\
+            from.erase(it);\
+            return;\
+        }\
+    }
+
+#define moveall(from, to)   \
+    for (auto it = from.begin(); it != from.end();)\
+    {\
+        to[it->first] = std::move(it->second);\
+        it = from.erase(it);\
+    }
+
+#define iterate(container)  \
+    for (auto it = container.begin(), next = it; it != container.end(); it = next)\
+    {\
+        ++next;\
+        f(it->second.get());\
+    }
 
 /// modifiers:
-Canvas& Canvas::custom_redraw(RedrawFunc func)
+Canvas& Canvas::on_redraw(RedrawFunc func)
 {
-    m_custom_redraw = func;
+    m_on_redraw = func;
     return *this;
 }
 
@@ -119,64 +149,205 @@ Canvas& Canvas::redraw()
     return *this;
 }
 
-Canvas& Canvas::add_item(std::string const& id, WidgetItem* item)
+ItemID Canvas::add_item(std::string const& name, WidgetItem* item)
 {
-    if (id.empty()) add_item(item);
-    else m_items[id] = std::unique_ptr<WidgetItem>(item);
-    return *this;
+    if (name.empty())
+    {
+        return add_item(item);
+    }
+    else
+    {
+        m_visible_items[++m_id_counter] = std::unique_ptr<WidgetItem>(item);
+        m_name_to_id[name] = m_id_counter;
+        item->id = m_id_counter;
+        return m_id_counter;
+    }
 }
 
-Canvas& Canvas::add_item(WidgetItem* item)
+ItemID Canvas::add_item(WidgetItem* item)
 {
-    m_items[std::to_string(m_counter++)] = std::unique_ptr<WidgetItem>(item);
-    return *this;
+    m_visible_items[++m_id_counter] = std::unique_ptr<WidgetItem>(item);
+    item->id = m_id_counter;
+    return m_id_counter;
 }
 
-Canvas& Canvas::add_canvas(std::string const& id, Canvas* item)
+ItemID Canvas::add_canvas(std::string const& name, Canvas* item)
 {
-    if (id.empty()) add_canvas(item);
-    else m_canvases[id] = std::unique_ptr<Canvas>(item);
-    return *this;
+    if (name.empty())
+    {
+        return add_canvas(item);
+    }
+    else
+    {
+        m_visible_canvases[++m_id_counter] = std::unique_ptr<Canvas>(item);
+        m_name_to_id[name] = m_id_counter;
+        item->id = m_id_counter;
+        return m_id_counter;
+    }
 }
 
-Canvas& Canvas::add_canvas(Canvas* item)
+ItemID Canvas::add_canvas(Canvas* item)
 {
-    m_canvases[std::to_string(m_counter++)] = std::unique_ptr<Canvas>(item);
-    return *this;
+    m_visible_canvases[++m_id_counter] = std::unique_ptr<Canvas>(item);
+    item->id = m_id_counter;
+    return m_id_counter;
 }
 
-void Canvas::remove(WidgetItem* item)
-{
-    for (auto it = m_items.rbegin(); it != m_items.rend(); ++it)
-        if (it->second.get() == item)
-            m_items.erase(it.base());
-    for (auto it = m_canvases.rbegin(); it != m_canvases.rend(); ++it)
-        if (it->second.get() == item)
-            m_canvases.erase(it.base());
-}
+//void Canvas::remove(WidgetItem* item)
+//{
+//    for (auto it = m_visible_items.begin(); it != m_visible_items.end(); ++it)
+//        if (it->second.get() == item)
+//            m_visible_items.erase(it);
+//
+//    for (auto it = m_invisible_items.begin(); it != m_invisible_items.end(); ++it)
+//        if (it->second.get() == item)
+//            m_invisible_items.erase(it);
+//
+//    for (auto it = m_visible_canvases.rbegin(); it != m_visible_canvases.rend(); ++it)
+//        if (it->second.get() == item)
+//            m_visible_canvases.erase(it.base());
+//
+//    for (auto it = m_invisible_canvases.rbegin(); it != m_invisible_canvases.rend(); ++it)
+//        if (it->second.get() == item)
+//            m_invisible_canvases.erase(it.base());
+//}
 
-void Canvas::remove(std::string const& id)
+//void Canvas::remove(ItemID id)
+//{
+//    auto item_it = m_visible_items.find(id);
+//    if (item_it != m_visible_items.end())
+//        m_visible_items.erase(item_it);
+//
+//    item_it = m_invisible_items.find(id);
+//    if (item_it != m_invisible_items.end())
+//        m_invisible_items.erase(item_it);
+//
+//    auto canvas_it = m_visible_canvases.find(id);
+//    if (canvas_it != m_visible_canvases.end())
+//        m_visible_canvases.erase(canvas_it);
+//
+//    auto canvas_it = m_invisible_canvases.find(id);
+//    if (canvas_it != m_invisible_canvases.end())
+//        m_invisible_canvases.erase(canvas_it);
+//}
+
+void Canvas::foreach_child(std::function<void(WidgetItem*)> f, ChildFlags flags)
 {
-    const auto it = m_items.find(id);
-    if (it != m_items.end())
-        m_items.erase(it);
+    //  iterate over containers based on flags
+    if (flags & VISIBLE)
+    {
+        if (flags & ITEMS) { iterate(m_visible_items) }
+        else if (flags & CANVASES) { iterate(m_visible_canvases) }
+        else
+        {
+            //  only VISIBLE was specified but neither ITEMS/CANVASES were... so apply `f` to all
+            iterate(m_visible_items)
+            iterate(m_visible_canvases)
+        }
+    }
     
-    const auto it2 = m_canvases.find(id);
-    if (it2 != m_canvases.end())
-        m_canvases.erase(it2);
+    if (flags & INVISIBLE)
+    {
+        if (flags & ITEMS) { iterate(m_invisible_items) }
+        else if (flags & CANVASES) { iterate(m_invisible_canvases) }
+        else
+        {
+            iterate(m_invisible_items)
+            iterate(m_invisible_canvases)
+        }
+    }
+}
+    
+void Canvas::show(ItemID id)
+{
+    //  move item with given id from invisible to visible
+    findmove(m_invisible_items, m_visible_items)
+    findmove(m_invisible_canvases, m_visible_canvases)
 }
 
-void Canvas::foreach_child(std::function<void(WidgetItem*)> f)
+void Canvas::hide(ItemID id)
 {
-    for (auto& pair : m_items) f(pair.second.get());
-    for (auto& pair : m_canvases) f(pair.second.get());
+    //  move item with given id from visible to invisible
+    findmove(m_visible_items, m_invisible_items)
+    findmove(m_visible_canvases, m_invisible_canvases)
+}
+
+void Canvas::show_children()
+{
+    moveall(m_invisible_items, m_visible_items)
+    moveall(m_invisible_canvases, m_visible_canvases)
+}
+
+void Canvas::hide_children()
+{
+    moveall(m_visible_items, m_invisible_items)
+    moveall(m_visible_canvases, m_invisible_canvases)
 }
 
 /// accessors:
-void Canvas::foreach_child(std::function<void(WidgetItem*)> f) const
+WidgetItem* Canvas::child(std::string const& name) const
 {
-    for (auto const& pair : m_items) f(pair.second.get());
-    for (auto const& pair : m_canvases) f(pair.second.get());
+    auto it = m_name_to_id.find(name);
+    return it != m_name_to_id.end() ? child(it->second) : nullptr;
+}
+
+WidgetItem* Canvas::child(ItemID id) const
+{
+    if (id != 0)
+    {
+#define findret(container) \
+    {\
+        auto it = container.find(id);\
+        if (it != container.end())\
+            return it->second.get();\
+    }
+
+        //  look for the child in each container; return if found
+        findret(m_visible_items)
+        findret(m_invisible_items)
+        findret(m_visible_canvases)
+        findret(m_invisible_canvases)
+        
+#undef findret
+    }
+    
+    return nullptr;
+}
+
+void Canvas::foreach_child(std::function<void(WidgetItem*)> f, ChildFlags flags) const
+{
+#define iterate(container)  \
+    for (auto it = container.cbegin(), next = it; it != container.cend(); it = next)\
+    {\
+        ++next;\
+        f(it->second.get());\
+    }
+    
+    //  iterate over containers based on flags
+    if (flags & VISIBLE)
+    {
+        if (flags & ITEMS) { iterate(m_visible_items) }
+        else if (flags & CANVASES) { iterate(m_visible_canvases) }
+        else
+        {
+            //  only VISIBLE was specified but neither ITEMS/CANVASES were... so apply `f` to all
+            iterate(m_visible_items)
+            iterate(m_visible_canvases)
+        }
+    }
+    
+    if (flags & INVISIBLE)
+    {
+        if (flags & ITEMS) { iterate(m_invisible_items) }
+        else if (flags & CANVASES) { iterate(m_invisible_canvases) }
+        else
+        {
+            iterate(m_invisible_items)
+            iterate(m_invisible_canvases)
+        }
+    }
+    
+#undef iterate
 }
 
 /// GUI functions:
@@ -186,9 +357,8 @@ bool Canvas::handle_mouse_event(MouseEvent const& event)
         return false;
 
     //  since canvas deals with offset'ed items, apply an offset to the event
-    for (auto& pair : m_items) pair.second->handle_mouse_event(event.offset(m_dimensions.x, m_dimensions.y));
-    for (auto& pair : m_canvases) pair.second->handle_mouse_event(event.offset(m_dimensions.x, m_dimensions.y));
-    
+    const auto offset_event = event.offset(m_dimensions.x, m_dimensions.y);
+    foreach_child(std::bind(&WidgetItem::handle_mouse_event, _1, std::cref(offset_event)), VISIBLE);
     return true;
 }
 
@@ -197,17 +367,15 @@ bool Canvas::handle_wheel_event(WheelEvent const& event)
     if (!Super::handle_wheel_event(event))
         return false;
 
-    for (auto& pair : m_items) pair.second->handle_wheel_event(event.offset(m_dimensions.x, m_dimensions.y));
-    for (auto& pair : m_canvases) pair.second->handle_wheel_event(event.offset(m_dimensions.x, m_dimensions.y));
-
+    const auto offset_event = event.offset(m_dimensions.x, m_dimensions.y);
+    foreach_child(std::bind(&WidgetItem::handle_wheel_event, _1, std::cref(offset_event)), VISIBLE);
     return true;
 }
 
 void Canvas::update(Renderer const& renderer)
 {
-    for (auto& pair : m_canvases)
-        if (pair.second->is_visible())
-            pair.second->update(renderer);
+    for (auto& pair : m_visible_canvases)
+        pair.second->update(renderer);
     
     if (m_redraw)
     {
@@ -216,21 +384,15 @@ void Canvas::update(Renderer const& renderer)
     }
 }
 
-bool Canvas::render(Renderer const& renderer) const
+void Canvas::render(Renderer const& renderer) const
 {
-    //  not using RectItem::render because we want to use the background only during redraw
-    if (!WidgetItem::render(renderer))
-        return false;
-    
     if (m_texture)
         SDL_RenderCopy(renderer.get(), m_texture.get(), nullptr, &m_dimensions);
-    return true;
 }
 
 void Canvas::render_children(Renderer const& renderer) const
 {
-    for (auto const& pair : m_items) pair.second->render(renderer);
-    for (auto const& pair : m_canvases) pair.second->render(renderer);
+    foreach_child(std::bind(&WidgetItem::render, _1, std::cref(renderer)), VISIBLE);
 }
 
 /// helper functions:
@@ -244,18 +406,23 @@ Canvas& Canvas::clear(Renderer const& renderer)
 void Canvas::perform_redraw(Renderer const& renderer)
 {
     this->clear(renderer);
-    if (m_custom_redraw)
-        m_custom_redraw(renderer);
+    if (m_on_redraw)
+        m_on_redraw(renderer);
     else
-        render_children(renderer);
+        render_children(renderer);  //  default to simply rendering the children
 }
 
 void Canvas::swap(Canvas& canvas) noexcept
 {
     Super::swap(canvas);
-    std::swap(m_texture, canvas.m_texture);
-    std::swap(m_custom_redraw, canvas.m_custom_redraw);
-    std::swap(m_redraw, canvas.m_redraw);
-    std::swap(m_items, canvas.m_items);
-    std::swap(m_canvases, canvas.m_canvases);
+    
+    using std::swap;
+    swap(m_texture, canvas.m_texture);
+    swap(m_on_redraw, canvas.m_on_redraw);
+    swap(m_redraw, canvas.m_redraw);
+    swap(m_visible_items, canvas.m_visible_items);
+    swap(m_invisible_items, canvas.m_invisible_items);
+    swap(m_visible_canvases, canvas.m_visible_canvases);
+    swap(m_invisible_canvases, canvas.m_invisible_canvases);
+    swap(m_id_counter, canvas.m_id_counter);
 }

@@ -47,8 +47,6 @@ class Canvas;
  */
 class TextItem : public WidgetItem, public TextInterface
 {
-    using Super = WidgetItem;
-    
 public:
     /// constructors:
     TextItem(Canvas* parent = nullptr, std::string const& id = "") noexcept;
@@ -64,11 +62,8 @@ public:
     TextItem& operator= (TextItem const&) = delete;
     TextItem& operator= (TextItem&&) = delete;
     
-    /// accessors:
-    virtual bool is_visible() const override;
-    
     /// GUI functions:
-    virtual bool render(Renderer const&) const override;
+    virtual void render(Renderer const&) const override;
 };
 
 
@@ -82,7 +77,7 @@ inline TextItem::TextItem(SDL_Rect const& dimensions, Canvas* parent, std::strin
 {
 }
 inline TextItem::TextItem(SDL_Rect const& dimensions, Alignment alignment, Canvas* parent, std::string const& id) noexcept
-    : Super(dimensions, parent, id)
+    : WidgetItem(dimensions, parent, id)
     , TextInterface(alignment)
 {
 }
@@ -90,8 +85,12 @@ inline TextItem::TextItem(SDL_Rect const& dimensions, Alignment alignment, Canva
 /// destructor:
 inline TextItem::~TextItem() = default;
 
-/// accessors:
-inline bool TextItem::is_visible() const { return Super::is_visible() && !m_font.expired(); }
+/// GUI functions:
+inline void TextItem::render(Renderer const& renderer) const
+{
+    //  TODO: call show()/hide() when font is set? (do similar for DataView?)
+    draw_text(renderer, m_dimensions, m_font.lock(), text(), m_alignment);
+}
 
 
 #endif

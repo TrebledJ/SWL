@@ -27,7 +27,7 @@
 /// GUI functions:
 bool TextButton::handle_mouse_event(MouseEvent const& event)
 {
-    //  filter events by relying on parent function
+    //  filter events by relying on base function
     if (!Super::handle_mouse_event(event))
         return false;
     
@@ -35,13 +35,9 @@ bool TextButton::handle_mouse_event(MouseEvent const& event)
     return true;
 }
 
-bool TextButton::render(Renderer const& renderer) const
+void TextButton::render(Renderer const& renderer) const
 {
-    //  draw button before text
-    if (!Super::render(renderer))
-        return false;
-    
+    Super::render(renderer);    //  draw button before text
     draw_text(renderer, m_dimensions, m_font.lock(), text(), m_alignment);
-    return true;
 }
 

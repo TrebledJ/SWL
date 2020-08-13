@@ -87,11 +87,8 @@ public:
     ListView& selection_color(SDL_Color const& color);
     ListView& draw_item_borders(bool draw = true);
     
-    /// accessors:
-    virtual bool is_visible() const override;
-    
     /// GUI functions:
-    virtual bool render(Renderer const& renderer) const override;
+    virtual void render(Renderer const& renderer) const override;
     
     /// convenience functions:
     void swap(ListView& other) noexcept;
@@ -164,22 +161,14 @@ inline ListView<T>& ListView<T>::selection_color(SDL_Color const& color) { m_sel
 template<class T>
 inline ListView<T>& ListView<T>::draw_item_borders(bool draw) { m_draw_item_borders = draw; return *this; }
 
-/// accessors:
-template<class T>
-inline bool ListView<T>::is_visible() const
-{
-    return Super::is_visible() && !m_header_font.expired();
-}
-
 /// GUI functions:
 template<class T>
-bool ListView<T>::render(Renderer const& renderer) const
+void ListView<T>::render(Renderer const& renderer) const
 {
-    if (!Super::render(renderer))
-        return false;
+    Super::render(renderer);
     
     render_head(renderer);
-    this->render_body(renderer);
+    this->render_body(renderer);    //  we need "this->" here due to some technical C++ template thing
     
     if (DEBUG_LISTVIEW)
     {
@@ -188,8 +177,6 @@ bool ListView<T>::render(Renderer const& renderer) const
             this->internal_width(), internal_height()};
         draw_rect(renderer, bounds, Colors::RED);
     }
-
-    return true;
 }
 
 /// convenience functions:

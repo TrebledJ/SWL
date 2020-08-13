@@ -21,12 +21,3 @@
 #include "widgets/textitem.hpp"
 
 
-/// GUI functions:
-bool TextItem::render(Renderer const& renderer) const
-{
-    if (!Super::render(renderer))
-        return false;
-    
-    draw_text(renderer, m_dimensions, m_font.lock(), text(), m_alignment);
-    return true;
-}

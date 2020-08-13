@@ -33,6 +33,7 @@
 #include <map>
 #include <string>
 #include <utility>
+#include <cstdint>
 
 
 /**
@@ -51,6 +52,15 @@ class Canvas : public RectItem
     
 public:
     using RedrawFunc = std::function<void(Renderer const&)>;
+    
+    enum ChildFlags {
+        VISIBLE = (1 << 0),
+        INVISIBLE = (1 << 1),
+        ITEMS = (1 << 2),
+        CANVASES = (1 << 3),
+        
+        ALL = VISIBLE | INVISIBLE | ITEMS | CANVASES,
+    };
 
 public:
     /// constructors:
@@ -77,7 +87,7 @@ public:
     Canvas& operator= (Canvas&&) = delete;
     
     /// modifiers:
-    Canvas& custom_redraw(RedrawFunc);
+    Canvas& on_redraw(RedrawFunc);
     
     /**
      * @brief   Set the texture's blend mode
@@ -94,11 +104,10 @@ public:
      * @brief   Adds an item to the canvas. The item will be fully managed by
      *          the canvas (i.e. it will be deleted when the Canvas is destroyed).
      *
-     *          Adding items through the second overload will leave it nameless and
-     *          not possible to lookup using find().
+     *          Adding items through the second overload will give it an anonymous name.
      */
-    Canvas& add_item(std::string const& id, WidgetItem*);
-    Canvas& add_item(WidgetItem*);
+    ItemID add_item(std::string const& name, WidgetItem*);
+    ItemID add_item(WidgetItem*);
     
     /**
      * @brief   Adds a child canvas. The child canvas will be managed by this class.
@@ -106,22 +115,43 @@ public:
      *          Adding items through the second overload will leave it nameless and
      *          not possible to lookup using find().
      */
-    Canvas& add_canvas(std::string const& id, Canvas*);
-    Canvas& add_canvas(Canvas*);
+    ItemID add_canvas(std::string const& name, Canvas*);
+    ItemID add_canvas(Canvas*);
     
-    void remove(WidgetItem*);
-    void remove(std::string const& id);
+//    void remove(WidgetItem*);
+//    void remove(ItemID);
     
-    void foreach_child(std::function<void(WidgetItem*)>);
+    /**
+     * @brief   Apply a function to each children.
+     *          The function may call an operation that removes the item
+     *          (e.g. [](WidgetItem* w) { w->hide(); })
+     *
+     * @param   flags Which children to apply the function on.
+     *          (e.g. flags == VISIBLE | CANVASES will only apply the function
+     *          on visible canvases)
+     */
+    void foreach_child(std::function<void(WidgetItem*)>, ChildFlags flags = ALL);
+    
+    /**
+     * @brief   Shows/hides a child by item id.
+     */
+    void show(ItemID);
+    void hide(ItemID);
+    void show_children();
+    void hide_children();
     
     /// accessors:
     /**
-     * @brief   Finds a child item with the given id and casts it to the given type.
+     * @brief   Finds a child by name or id.
      */
-    template<class T = WidgetItem>
-    T* child(std::string const& id) const;
+    WidgetItem* child(std::string const& name) const;
+    WidgetItem* child(ItemID id) const;
     
-    void foreach_child(std::function<void(WidgetItem*)>) const;
+    /**
+     * @brief   This version is a const version of foreach_child. Refer to the other
+     *          version for usage guidance.
+     */
+    void foreach_child(std::function<void(WidgetItem*)>, ChildFlags = ALL) const;
     
     /// GUI functions:
     virtual bool handle_mouse_event(MouseEvent const&) override;
@@ -138,7 +168,7 @@ public:
      *          Use redraw() and update() to update the texture.
      * @pre     make() the canvas first
      */
-    virtual bool render(Renderer const&) const override;
+    virtual void render(Renderer const&) const override;
     void render_children(Renderer const&) const;
     
     /// convenience functions:
@@ -146,19 +176,23 @@ public:
     
 private:
     Texture m_texture;
-    RedrawFunc m_custom_redraw;
+    RedrawFunc m_on_redraw;
     bool m_redraw;   //  whether canvas will redraw next render or not
     
     //  child widgets stored here will be rendered relative to the Canvas
-    std::map<std::string, std::unique_ptr<WidgetItem>> m_items;
-    std::map<std::string, std::unique_ptr<Canvas>> m_canvases;
-    unsigned long long m_counter = 0; //  for generating names for unnamed children
+    std::map<ItemID, std::unique_ptr<Canvas>> m_visible_canvases;
+    std::map<ItemID, std::unique_ptr<Canvas>> m_invisible_canvases;
+    
+    std::map<ItemID, std::unique_ptr<WidgetItem>> m_visible_items;
+    std::map<ItemID, std::unique_ptr<WidgetItem>> m_invisible_items;
+    std::map<std::string, ItemID> m_name_to_id;
+    
+    ItemID m_id_counter = 0;    //  used for keeping track of ID and for generating names of unnamed children
     
 private:
     /// helper functions:
     /**
      * @brief   Clears the canvas with the background color
-     * @pre     make() the canvas first
      */
     Canvas& clear(Renderer const&);
     
@@ -173,33 +207,18 @@ inline Canvas::Canvas(SDL_Rect const& dimensions)
     , m_redraw{true}
 {
 }
-inline Canvas::Canvas(int width, int height, Renderer const& renderer, Canvas* parent, std::string const& id) : Canvas({0, 0, width, height}, renderer, parent, id) {}
-inline Canvas::Canvas(SDL_Rect const& dimensions, Renderer const& renderer, Canvas* parent, std::string const& id)
+inline Canvas::Canvas(int width, int height, Renderer const& renderer, Canvas* parent, std::string const& name) : Canvas({0, 0, width, height}, renderer, parent, name) {}
+inline Canvas::Canvas(SDL_Rect const& dimensions, Renderer const& renderer, Canvas* parent, std::string const& name)
     : Super(dimensions)
     , m_redraw{true}
     , m_texture{make_texture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, dimensions.w, dimensions.h)}
 {
     if ((m_parent = parent))
-        m_parent->add_canvas(id, this);
+        m_parent->add_canvas(name, this);
 }
 
 /// destructors:
 inline Canvas::~Canvas() = default;
-
-/// accessors:
-template<class T>
-T* Canvas::child(std::string const& id) const
-{
-    const auto item_it = m_items.find(id);
-    if (item_it != m_items.end())
-        return dynamic_cast<T*>(item_it->second.get());
-    
-    const auto canvas_it = m_canvases.find(id);
-    if (canvas_it != m_canvases.end())
-        return dynamic_cast<T*>(canvas_it->second.get());
-    
-    return nullptr;
-}
 
 
 #endif /* canvas_hpp */

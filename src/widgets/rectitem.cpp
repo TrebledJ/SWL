@@ -24,16 +24,12 @@
 
 
 RectItem::RectItem(SDL_Rect const& dimensions, Canvas* parent, std::string const& id) noexcept
-    : Super(dimensions, parent, id)
+    : WidgetItem(dimensions, parent, id)
     , m_background_color{Themes::PRIMARY}
 {
 }
 
-bool RectItem::render(Renderer const& renderer) const
+void RectItem::render(Renderer const& renderer) const
 {
-    if (!Super::render(renderer))
-        return false;
-    
     draw_filled_rect(renderer, m_dimensions, m_enabled ? m_background_color : Colors::darken(m_background_color, 0.5));
-    return true;
 }

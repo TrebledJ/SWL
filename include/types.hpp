@@ -48,6 +48,9 @@ using FontRef = std::weak_ptr<FC_Font>;
 using SharedMusic = std::shared_ptr<Mix_Music>;
 using MusicRef = std::weak_ptr<Mix_Music>;
 
+//  an ID type used as a bond between parent and children items
+using ItemID = uint16_t;    //  for most applications, 60'000 items is more than enough
+
 
 /// convenience types:
 struct Point

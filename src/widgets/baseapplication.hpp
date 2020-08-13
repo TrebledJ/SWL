@@ -47,7 +47,7 @@ public:
     BaseApplication& operator= (BaseApplication&&) = delete;
     
 private:
-    using Canvas::custom_redraw;
+    using Canvas::on_redraw;
 };
 
 

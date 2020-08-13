@@ -75,7 +75,7 @@ int main(int argc, const char * argv[])
 
 
 DemoApplication::DemoApplication()
-    : Application({50, 50, 640, 480}, "ListView Simple Demo")
+    : Application({50, 50, 640, 480}, "MenuView Demo")
 {
     font = add_font(fontpath, 16, Themes::SECONDARY);
     init_menu_view();
@@ -224,7 +224,7 @@ void DemoApplication::update()
         child("clear-button")->enable();
     
     //  update target text
-    auto target_button = child<TextButton>("target-button");
+    auto target_button = dynamic_cast<TextButton*>(child("target-button"));
     if (index == -1)
     {
         if (menu_model.root() == menu_model.node())

@@ -32,8 +32,6 @@
  */
 class RectItem : public WidgetItem
 {
-    using Super = WidgetItem;
-    
 public:
     /// constructors:
     RectItem(Canvas* parent = nullptr, std::string const& id = "") noexcept;
@@ -52,7 +50,7 @@ public:
     void background(SDL_Color const& color);
     
     /// GUI functions:
-    virtual bool render(Renderer const& renderer) const override;
+    virtual void render(Renderer const& renderer) const override;
     
 protected:
     SDL_Color m_background_color;

@@ -56,12 +56,9 @@ public:
     TextButton& operator= (TextButton const&) = delete;
     TextButton& operator= (TextButton&&) = delete;
     
-    /// accessors:
-    virtual bool is_visible() const override;
-    
     /// GUI functions:
     virtual bool handle_mouse_event(MouseEvent const&) override;
-    virtual bool render(Renderer const&) const override;
+    virtual void render(Renderer const&) const override;
 };
 
 
@@ -78,12 +75,6 @@ inline TextButton::TextButton(SDL_Rect const& dimensions, Canvas* parent, std::s
 
 /// destructor:
 inline TextButton::~TextButton() = default;
-
-/// accessors:
-inline bool TextButton::is_visible() const
-{
-    return Super::is_visible() && !m_font.expired();
-}
 
 
 #endif

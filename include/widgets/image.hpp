@@ -51,11 +51,8 @@ public:
     /// modifiers:
     bool load(Renderer const&, std::string const& filename);
     
-    /// accessors:
-    virtual bool is_visible() const override;
-    
     /// GUI functions:
-    virtual bool render(Renderer const&) const override;
+    virtual void render(Renderer const&) const override;
     
     /// convenience functions:
     void swap(ImageItem&) noexcept;
@@ -87,12 +84,6 @@ inline ImageItem& ImageItem::operator= (ImageItem&& other) noexcept
 inline bool ImageItem::load(Renderer const& renderer, std::string const& filename)
 {
     return bool( m_texture = make_texture(IMG_LoadTexture(renderer.get(), filename.data())) );
-}
-
-/// accessors:
-inline bool ImageItem::is_visible() const
-{
-    return WidgetItem::is_visible() && m_texture;
 }
 
 

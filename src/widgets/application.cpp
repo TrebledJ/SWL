@@ -38,7 +38,7 @@ Application::Application(SDL_Rect const& dimensions, std::string const& window_t
     scene_handler.set_update_action([this]()
                                     {
                                         set_active_music(MusicRef());
-                                        foreach_child(&WidgetItem::hide);
+                                        hide_children();
                                     });
     
     background(Themes::BACKGROUND);
@@ -104,7 +104,8 @@ MusicRef Application::add_music(std::string const& filename)
 void Application::loop()
 {
     scene_handler.update_state();
-    redraw();
+    
+    redraw();   //  TODO: find a way to redraw only when needed?
     update(renderer);
     
     if (active_music_changed)
@@ -182,7 +183,7 @@ void Application::render() const
     SDL_RenderClear(renderer.get());
     
     //  draw
-    foreach_child([this](WidgetItem* item){ item->render(renderer); });
+    render_children(renderer);
     
     //  show
     reset_target(renderer);

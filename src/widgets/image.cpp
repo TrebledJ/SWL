@@ -22,13 +22,9 @@
 
 
 /// GUI functions:
-bool ImageItem::render(Renderer const& renderer) const
+void ImageItem::render(Renderer const& renderer) const
 {
-    if (!WidgetItem::render(renderer))
-        return false;
-    
     SDL_RenderCopy(renderer.get(), m_texture.get(), nullptr, &m_dimensions);
-    return true;
 }
 
 /// convenience functions:

@@ -72,31 +72,16 @@ public:
     SDL_Rect dimensions() const;
     
     /// @return true if the item is enabled, otherwise false
-    bool is_enabled() const;
-    
-    /**
-     * @return  true if the button should be displayed/interacted with,
-     *          false otherwise
-     *
-     * Override if other properties define an object's visibility
-     *  or ability to interact.
-     * OOP Note: Overrides of this function will affect other functions that use it.
-     *  This includes the base implementations of handle_event() and render().
-     *
-     * See TextItem for an example of overriding is_visible().
-     */
-    virtual bool is_visible() const;
+    virtual bool is_enabled() const;
     
     /// GUI functions:
     /**
-     * @brief   Delegates mouse/wheel events to their respective (i.e.
-     *          handle_mouse_event() and handle_wheel_event()).
-     *          Other events are handled here.
+     * @brief   Handles events.
      * @return  true if the event was handled, false otherwise.
      *          For mouse/wheel events, an event is "handled" if the item is visible.
      *          For key events, an event is "handled" if the item responds to the key.
      *
-     * On a normal basis, these function doesn't need to be overrided.
+     * On a normal basis, these functions doesn't need to be overridden.
      * Override only when needed
      *  (to introduce different interactive behaviours, delegating to children, etc.).
      *
@@ -107,14 +92,13 @@ public:
     virtual bool handle_key_event(KeyEvent const&);
     
     /**
-     * @return  true if the item was rendered, false otherwise
+     * @brief   Renders an item. This should be implemented such that
+     *          calling render() will immediately draw the item on the
+     *          renderer.
      *
-     * Override if there are other aspects to render (e.g. text, images)
-     * or if there are other steps to take.
-     *
-     * See RectItem and Canvas for an example of overriding render().
+     * See RectItem and Canvas for an example of implementing render().
      */
-    virtual bool render(Renderer const&) const;
+    virtual void render(Renderer const&) const = 0;
     
     /// convenience functions:
     void swap(WidgetItem&) noexcept;
@@ -126,10 +110,12 @@ public:
     bool is_point_inside(int x, int y) const;
     
 protected:
+    ItemID id = 0;      //  keeps track of this widget's ID wrt its parent
     SDL_Rect m_dimensions;
     Canvas* m_parent;   //  weak pointer    //  TODO: storing this here for now (might be useful for defining move semantics later)
-    bool m_visible;     //  whether an item should be seen
     bool m_enabled;     //  whether an item should be able to interact with (useful for buttons)
+    
+    friend class Canvas;
 };
 
 
@@ -145,9 +131,6 @@ inline WidgetItem& WidgetItem::y(int y) { m_dimensions.y = y; return *this; }
 inline WidgetItem& WidgetItem::width(int width) { m_dimensions.w = width; return *this; }
 inline WidgetItem& WidgetItem::height(int height) { m_dimensions.h = height; return *this; }
 
-inline void WidgetItem::show() { m_visible = true; }
-inline void WidgetItem::hide() { m_visible = false; }
-
 /// accessors:
 inline int WidgetItem::x() const { return m_dimensions.x; }
 inline int WidgetItem::y() const { return m_dimensions.y; }
@@ -157,23 +140,20 @@ inline Point WidgetItem::pos() const { return {x(), y()}; }
 inline Size WidgetItem::size() const { return {width(), height()}; }
 inline SDL_Rect WidgetItem::dimensions() const { return m_dimensions; }
 inline bool WidgetItem::is_enabled() const { return m_enabled; }
-inline bool WidgetItem::is_visible() const { return m_visible; }
 
 /// GUI functions:
 inline bool WidgetItem::handle_mouse_event(MouseEvent const& event)
 {
-    return is_visible() && m_enabled && is_point_inside(event.pos.x, event.pos.y);
+    return is_enabled() && is_point_inside(event.pos.x, event.pos.y);
 }
 inline bool WidgetItem::handle_wheel_event(WheelEvent const& event)
 {
-    return is_visible() && m_enabled && is_point_inside(event.pos.x, event.pos.y);
+    return is_enabled() && is_point_inside(event.pos.x, event.pos.y);
 }
 inline bool WidgetItem::handle_key_event(KeyEvent const& event)
 {
     return false;
 }
-
-inline bool WidgetItem::render(Renderer const& renderer) const { return is_visible(); }
 
 /// convenience functions:
 inline bool WidgetItem::is_point_inside(int x, int y) const

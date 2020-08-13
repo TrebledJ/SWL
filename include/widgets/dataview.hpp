@@ -80,12 +80,12 @@ public:
     DataView& on_index_hovered(IndexCallback);
     
     /// accessors:
-    virtual bool is_visible() const override;
+    bool is_valid() const;
     
     /// GUI functions:
     virtual bool handle_mouse_event(MouseEvent const& event) override;
     virtual bool handle_wheel_event(WheelEvent const& event) override;
-    virtual bool render(Renderer const& renderer) const override;
+    virtual void render(Renderer const& renderer) const override;
     
     /// convenience functions:
     void swap(DataView& other) noexcept;
@@ -176,26 +176,26 @@ inline DataView<T>& DataView<T>::on_index_hovered(IndexCallback f) { m_index_hov
 
 /// accessors:
 template<class T>
-inline bool DataView<T>::is_visible() const
+inline bool DataView<T>::is_valid() const
 {
-    return Super::is_visible() && m_model && !m_item_font.expired();
+    return m_model && !m_item_font.expired();
 }
 
 /// GUI functions:
 template<class T>
 bool DataView<T>::handle_mouse_event(MouseEvent const& event)
 {
-    if (!Super::handle_mouse_event(event))
+    if (!Super::handle_mouse_event(event) || !is_valid())
         return false;
     
     auto index = get_index_under(event.pos.x, event.pos.y);
     if (event.type == MouseEvent::UP)
     {
-        if (m_index_clicked)   m_index_clicked(index);
+        if (m_index_clicked) m_index_clicked(index);
     }
     if (event.type == MouseEvent::MOTION)
     {
-        if (m_index_hovered)   m_index_hovered(index);
+        if (m_index_hovered) m_index_hovered(index);
     }
     
     return true;
@@ -204,7 +204,7 @@ bool DataView<T>::handle_mouse_event(MouseEvent const& event)
 template<class T>
 bool DataView<T>::handle_wheel_event(WheelEvent const& event)
 {
-    if (!Super::handle_wheel_event(event))
+    if (!Super::handle_wheel_event(event) || !is_valid())
         return false;
     
     int delta = event.wheel.y;
@@ -219,13 +219,13 @@ bool DataView<T>::handle_wheel_event(WheelEvent const& event)
 }
 
 template<class T>
-bool DataView<T>::render(Renderer const& renderer) const
+void DataView<T>::render(Renderer const& renderer) const
 {
-    if (!Super::render(renderer))
-        return false;
+    if (!is_valid())
+        return;
     
+    Super::render(renderer);
     render_body(renderer);
-    return true;
 }
 
 /// convenience functions:
