@@ -21,12 +21,12 @@
 #ifndef APPLICATION_HPP
 #define APPLICATION_HPP
 
-#include "baseapplication.hpp"
-#include "canvas.hpp"
+#include "widgets/baseapplication.hpp"
+#include "widgets/canvas.hpp"
+
 #include "themes.hpp"
 #include "types.hpp"
 #include "utility.hpp"
-
 #include "statemachine.hpp"
 
 #include "sdl_inc.hpp"

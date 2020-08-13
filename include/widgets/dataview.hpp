@@ -21,7 +21,7 @@
 #ifndef DATAVIEW_HPP
 #define DATAVIEW_HPP
 
-#include "datamodel.hpp"
+#include "models/datamodel.hpp"
 #include "widgets/widgetitem.hpp"
 #include "interfaces/button.hpp"
 

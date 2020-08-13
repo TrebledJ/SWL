@@ -21,7 +21,7 @@
 #ifndef BASEAPPLICATION_HPP
 #define BASEAPPLICATION_HPP
 
-#include "canvas.hpp"
+#include "widgets/canvas.hpp"
 #include "utility.hpp"
 #include <string>
 

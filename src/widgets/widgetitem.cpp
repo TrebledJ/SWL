@@ -18,9 +18,9 @@
  *
  */
 
-#include "widgetitem.hpp"
+#include "widgets/widgetitem.hpp"
+#include "widgets/canvas.hpp"
 
-#include "canvas.hpp"
 #include "types.hpp"
 #include "utility.hpp"
 

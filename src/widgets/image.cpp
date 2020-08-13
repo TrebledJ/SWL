@@ -18,7 +18,7 @@
  *
  */
 
-#include "image.hpp"
+#include "widgets/image.hpp"
 
 
 /// GUI functions:

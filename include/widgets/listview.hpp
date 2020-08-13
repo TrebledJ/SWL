@@ -21,9 +21,9 @@
 #ifndef LISTVIEW_HPP
 #define LISTVIEW_HPP
 
-#include "dataview.hpp"
-#include "listmodel.hpp"
-#include "button.hpp"
+#include "models/listmodel.hpp"
+#include "widgets/dataview.hpp"
+#include "interfaces/button.hpp"
 #include "utility.hpp"
 
 #include "types.hpp"

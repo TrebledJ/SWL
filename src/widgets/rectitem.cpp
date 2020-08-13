@@ -18,7 +18,7 @@
  *
  */
 
-#include "rectitem.hpp"
+#include "widgets/rectitem.hpp"
 #include "themes.hpp"
 #include "utility.hpp"
 

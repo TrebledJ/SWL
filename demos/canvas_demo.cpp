@@ -5,11 +5,11 @@
 //
 
 #include "widgets/application.hpp"
+#include "widgets/canvas.hpp"
 #include "widgets/textitem.hpp"
 #include "widgets/textbutton.hpp"
-#include "widgets/canvas.hpp"
-#include "widgets/listmodel.hpp"
 #include "widgets/listview.hpp"
+#include "models/listmodel.hpp"
 
 #include "themes.hpp"
 

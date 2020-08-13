@@ -21,9 +21,11 @@
 #ifndef MENUVIEW_HPP
 #define MENUVIEW_HPP
 
-#include "menumodel.hpp"
-#include "dataview.hpp"
-#include "textbutton.hpp"
+#include "models/menumodel.hpp"
+#include "widgets/dataview.hpp"
+#include "types.hpp"
+#include "utility.hpp"
+
 #include <string>
 
 

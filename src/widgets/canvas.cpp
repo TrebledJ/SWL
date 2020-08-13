@@ -18,7 +18,7 @@
  *
  */
 
-#include "canvas.hpp"
+#include "widgets/canvas.hpp"
 #include <iostream>
 #include <cassert>
 #include <functional>
@@ -127,6 +127,13 @@ using namespace std::placeholders;
     {\
         ++next;\
         f(it->second.get());\
+    }
+
+#define findret(container) \
+    {\
+        auto it = container.find(id);\
+        if (it != container.end())\
+        return it->second.get();\
     }
 
 /// modifiers:
@@ -295,20 +302,11 @@ WidgetItem* Canvas::child(ItemID id) const
 {
     if (id != 0)
     {
-#define findret(container) \
-    {\
-        auto it = container.find(id);\
-        if (it != container.end())\
-            return it->second.get();\
-    }
-
         //  look for the child in each container; return if found
         findret(m_visible_items)
         findret(m_invisible_items)
         findret(m_visible_canvases)
         findret(m_invisible_canvases)
-        
-#undef findret
     }
     
     return nullptr;
@@ -316,13 +314,6 @@ WidgetItem* Canvas::child(ItemID id) const
 
 void Canvas::foreach_child(std::function<void(WidgetItem*)> f, ChildFlags flags) const
 {
-#define iterate(container)  \
-    for (auto it = container.cbegin(), next = it; it != container.cend(); it = next)\
-    {\
-        ++next;\
-        f(it->second.get());\
-    }
-    
     //  iterate over containers based on flags
     if (flags & VISIBLE)
     {
@@ -346,8 +337,6 @@ void Canvas::foreach_child(std::function<void(WidgetItem*)> f, ChildFlags flags)
             iterate(m_invisible_canvases)
         }
     }
-    
-#undef iterate
 }
 
 /// GUI functions:

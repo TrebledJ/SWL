@@ -18,7 +18,8 @@
  *
  */
 
-#include "baseapplication.hpp"
+#include "widgets/baseapplication.hpp"
+#include "widgets/canvas.hpp"
 #include "utility.hpp"
 
 #include "sdl_image_inc.hpp"

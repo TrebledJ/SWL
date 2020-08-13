@@ -10,7 +10,7 @@
 //
 
 #include "widgets/application.hpp"
-#include "widgets/menumodel.hpp"
+#include "models/menumodel.hpp"
 #include "widgets/menuview.hpp"
 #include "widgets/textitem.hpp"
 #include "widgets/textbutton.hpp"

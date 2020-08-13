@@ -18,7 +18,7 @@
  *
  */
 
-#include "menumodel.hpp"
+#include "models/menumodel.hpp"
 
 
 const std::string MenuModel::BACK = "Back";

@@ -18,8 +18,14 @@
  *
  */
 
-#include "application.hpp"
+#include "widgets/application.hpp"
+
 #include "themes.hpp"
+#include "types.hpp"
+#include "utility.hpp"
+
+#include "sdl_inc.hpp"
+#include <string>
 
 
 static constexpr unsigned FPS = 50;

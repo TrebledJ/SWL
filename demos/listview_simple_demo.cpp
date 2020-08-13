@@ -7,7 +7,7 @@
 //
 
 #include "widgets/application.hpp"
-#include "widgets/listmodel.hpp"
+#include "models/listmodel.hpp"
 #include "widgets/listview.hpp"
 #include "widgets/textitem.hpp"
 
