@@ -158,11 +158,10 @@ void DemoApplication::init_widgets()
         });
     }
     
-    auto lview = new ListView<Unit>({5, 35, canvas[3]->width() - 10, canvas[3]->height() - 40}, canvas[3]);
+    auto lview = new ListView<Unit>({5, 35, canvas[3]->width() - 10, canvas[3]->height() - 40}, &model, canvas[3]);
     lview->header_font(font_normal).item_font(font_small);
     lview->header_height(40).item_height(20);
     lview->headers({"Class", "HP", "Str", "Amr"}).column_ratios({2, 1, 1, 1});
-    lview->model(&model);
     lview->selection_color(Colors::LIGHT_BLUE);
     lview->on_index_clicked([this, canvas](int index)
     {

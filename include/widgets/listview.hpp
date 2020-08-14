@@ -24,10 +24,11 @@
 #include "models/listmodel.hpp"
 #include "widgets/dataview.hpp"
 #include "interfaces/button.hpp"
-#include "utility.hpp"
+#include "interfaces/text.hpp"
 
 #include "types.hpp"
 #include "themes.hpp"
+#include "utility.hpp"
 
 #include <functional>
 #include <string>
@@ -69,8 +70,8 @@ class ListView<T> : public DataView<T>
     using Super = DataView<T>;
 public:
     /// constructors:
-    ListView(Canvas* parent = nullptr, std::string const& name = "") noexcept;
-    ListView(SDL_Rect const&, Canvas* parent = nullptr, std::string const& name = "") noexcept;
+    ListView(DataModel<T>*, Canvas* parent = nullptr, std::string const& name = "") noexcept;
+    ListView(SDL_Rect const&, DataModel<T>*, Canvas* parent = nullptr, std::string const& name = "") noexcept;
     ListView(ListView&&) = delete;
 
     /// destructors:
@@ -130,14 +131,15 @@ private:
 
 /// constructors:
 template<class T>
-inline ListView<T>::ListView(Canvas* parent, std::string const& name) noexcept
-    : ListView<T>({0, 0, 0, 0}, parent, name)
+inline ListView<T>::ListView(DataModel<T>* model, Canvas* parent, std::string const& name) noexcept
+    : ListView<T>({0, 0, 0, 0}, model, parent, name)
 {
 }
 template<class T>
-inline ListView<T>::ListView(SDL_Rect const& dimensions, Canvas* parent, std::string const& name) noexcept
-    : Super(dimensions, parent, name)
+inline ListView<T>::ListView(SDL_Rect const& dimensions, DataModel<T>* model, Canvas* parent, std::string const& name) noexcept
+    : Super(dimensions, model, parent, name)
     , m_header_height{60}
+    , m_header_font{TextInterface::default_font()}
     , m_selection_color{Colors::LIGHT_GREEN}
     , m_draw_item_borders{false}
 {
@@ -153,7 +155,7 @@ inline ListView<T>& ListView<T>::headers(std::vector<std::string> const& headers
 template<class T>
 inline ListView<T>& ListView<T>::column_ratios(std::vector<unsigned> const& ratios) { m_column_ratios = ratios; return *this; }
 template<class T>
-inline ListView<T>& ListView<T>::header_font(FontRef const& font) { m_header_font = font; return *this; }
+inline ListView<T>& ListView<T>::header_font(FontRef const& font) { if (!font.expired()) m_header_font = font; return *this; }
 template<class T>
 inline ListView<T>& ListView<T>::header_height(int height) { m_header_height = height; return *this; }
 template<class T>

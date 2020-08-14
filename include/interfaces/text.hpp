@@ -36,7 +36,7 @@ public:
     /// constructors:
     TextInterface(Alignment = ALIGN_TOP_LEFT) noexcept;
     TextInterface(FontRef const&, Alignment = ALIGN_TOP_LEFT) noexcept;
-    TextInterface(std::string const& text, FontRef const& = FontRef(), Alignment = ALIGN_TOP_LEFT) noexcept;
+    TextInterface(std::string const& text, FontRef const& = m_default_font, Alignment = ALIGN_TOP_LEFT) noexcept;
     
     /// destructor:
     virtual ~TextInterface();
@@ -46,24 +46,28 @@ public:
     void text(std::string const& text, Alignment);
     void text(std::string const& text, FontRef const&);
     void text(std::string const& text, FontRef const&, Alignment);
-    void font(FontRef const& font);
-    void align(Alignment alignment);
+    void font(FontRef const&);
+    void align(Alignment);
     
     /// accessors:
     virtual std::string const& text() const;
     
-    /// @brief  Returns whether the whole text thing is valid (basically here, tests if font is not null)
-    bool is_valid() const;
+    /// static methods:
+    static void default_font(FontRef const& font);
+    static FontRef const& default_font();
     
 protected:
     std::string m_text;
     FontRef m_font;
     Alignment m_alignment;
+    
+private:
+    static FontRef m_default_font;
 };
 
 
 /// constructors:
-inline TextInterface::TextInterface(Alignment alignment) noexcept : TextInterface("", FontRef(), alignment) {}
+inline TextInterface::TextInterface(Alignment alignment) noexcept : TextInterface("", m_default_font, alignment) {}
 inline TextInterface::TextInterface(FontRef const& font, Alignment alignment) noexcept : TextInterface("", font, alignment) {}
 inline TextInterface::TextInterface(std::string const& text, FontRef const& font, Alignment alignment) noexcept
     : m_text(text)
@@ -77,15 +81,18 @@ inline TextInterface::~TextInterface() = default;
 
 /// modifiers:
 inline void TextInterface::text(std::string const& text) { m_text = text; }
-inline void TextInterface::text(std::string const& text, Alignment alignment) { m_text = text; m_alignment = alignment; }
-inline void TextInterface::text(std::string const& text, FontRef const& font) { m_text = text; m_font = font; }
-inline void TextInterface::text(std::string const& text, FontRef const& font, Alignment alignment) { m_text = text; m_font = font; m_alignment = alignment; }
-inline void TextInterface::font(FontRef const& font) { m_font = font; }
+inline void TextInterface::text(std::string const& text_, Alignment alignment) { text(text_); align(alignment); }
+inline void TextInterface::text(std::string const& text_, FontRef const& font_) { text(text_); font(font_); }
+inline void TextInterface::text(std::string const& text_, FontRef const& font_, Alignment alignment) { text(text_, font_); align(alignment); }
+inline void TextInterface::font(FontRef const& font) { if (!font.expired()) m_font = font; }
 inline void TextInterface::align(Alignment alignment) { m_alignment = alignment; }
 
 /// accessors:
 inline std::string const& TextInterface::text() const { return m_text; }
-inline bool TextInterface::is_valid() const { return !m_font.expired(); }
+
+/// static methods:
+inline void TextInterface::default_font(FontRef const& font) { if (!font.expired()) m_default_font = font; }
+inline FontRef const& TextInterface::default_font() { return m_default_font; }
 
 
 #endif /* textinterface_hpp */

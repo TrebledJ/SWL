@@ -122,12 +122,11 @@ void DemoApplication::init_listview()
         employees.add({i, std::string(3, 'A'+i%26), std::string(3, 'a'+i%26), std::string(1, '0'+i%10)});
     }
 
-    auto listview = new ListView<Employee>({20, 60, 600, 300}, this);
+    auto listview = new ListView<Employee>({20, 60, 600, 300}, &employees, this);
     listview->headers({"ID", "First", "Last", "Job"}).header_font(header_font).header_height(30);
     listview->item_font(normal_font).item_height(20);
     listview->column_ratios({1, 2, 2, 4}).margins(Margins(10));
     listview->item_padding(Padding{0, 0, 3, 0});
-    listview->model(&employees);
     listview->selection_color(Colors::LIGHT_BLUE);
     listview->on_index_clicked([this](int index)
     {

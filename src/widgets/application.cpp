@@ -20,6 +20,8 @@
 
 #include "widgets/application.hpp"
 
+#include "interfaces/text.hpp"
+
 #include "themes.hpp"
 #include "types.hpp"
 #include "utility.hpp"
@@ -27,6 +29,10 @@
 #include "sdl_inc.hpp"
 #include <string>
 
+
+static const std::string DEFAULT_FONT_FILE = "demos/fonts/luximr.ttf";
+static const Uint32 DEFAULT_FONT_SIZE = 16;
+static const auto DEFAULT_FONT_COLOR = Themes::SECONDARY;
 
 static constexpr unsigned FPS = 50;
 static constexpr unsigned MUSIC_FADE_TIME_MS = 500;
@@ -55,6 +61,8 @@ Application::Application(SDL_Rect const& dimensions, std::string const& window_t
                       "[ERROR] Failed to initialise Renderer: ${sdl_error})");
     Util::assert_equals(SDL_RenderSetLogicalSize(renderer.get(), width(), height()), 0,
                         "[ERROR] Failed to set render logical size: ${sdl_error}");
+    
+    TextInterface::default_font(add_font(DEFAULT_FONT_FILE, DEFAULT_FONT_SIZE, DEFAULT_FONT_COLOR));
 }
 
 /// destructor:

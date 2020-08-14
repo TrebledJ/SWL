@@ -24,6 +24,7 @@
 #include "models/datamodel.hpp"
 #include "widgets/widgetitem.hpp"
 #include "interfaces/button.hpp"
+#include "interfaces/text.hpp"
 
 #include <string>
 #include <vector>
@@ -53,8 +54,8 @@ public:
 
 public:
     /// constructors:
-    DataView(Canvas* parent = nullptr, std::string const& name = "") noexcept;
-    DataView(SDL_Rect const&, Canvas* parent = nullptr, std::string const& name = "") noexcept;
+    DataView(DataModel<T>*, Canvas* parent = nullptr, std::string const& name = "") noexcept;
+    DataView(SDL_Rect const&, DataModel<T>*, Canvas* parent = nullptr, std::string const& name = "") noexcept;
 
     //  copy-ctor and copy-asgn are deleted so that properties are EXPLICIT
     //  (either from move funcs or modifiers) and so that there will be no
@@ -78,9 +79,6 @@ public:
     DataView& on_scrolled(WheelEventCallback);
     DataView& on_index_clicked(IndexCallback);
     DataView& on_index_hovered(IndexCallback);
-    
-    /// accessors:
-    bool is_valid() const;
     
     /// GUI functions:
     virtual bool handle_mouse_event(MouseEvent const& event) override;
@@ -108,6 +106,7 @@ protected:
 
     /// @return The y of the first row
     virtual int y0() const;
+    
     /// @return The y of the row at row `index`
     int y_at(std::size_t row_index) const;
     
@@ -124,6 +123,7 @@ protected:
     /// render helper functions:
     /// @brief  Iterates through model and renders items that can be seen
     void render_body(Renderer const&) const;
+    
     /// @brief  Renders the item from the model at the given index
     virtual void render_item(Renderer const&, T const& item, SDL_Rect const& bounds) const = 0;
     
@@ -139,17 +139,19 @@ private:
 
 /// constructors:
 template<class T>
-inline DataView<T>::DataView(Canvas* parent, std::string const& name) noexcept
-    : DataView<T>({0, 0, 0, 0}, parent, name)
+inline DataView<T>::DataView(DataModel<T>* model, Canvas* parent, std::string const& name) noexcept
+    : DataView<T>({0, 0, 0, 0}, model, parent, name)
 {
 }
 template<class T>
-inline DataView<T>::DataView(SDL_Rect const& dimensions, Canvas* parent, std::string const& name) noexcept
+inline DataView<T>::DataView(SDL_Rect const& dimensions, DataModel<T>* model, Canvas* parent, std::string const& name) noexcept
     : Super(dimensions, parent, name)
-    , m_model{nullptr}
+    , m_model{model}
     , m_item_height{40}
     , m_display_index{0}
+    , m_item_font{TextInterface::default_font()}
 {
+    assert(m_model != nullptr);
 }
 
 /// destructor:
@@ -158,9 +160,9 @@ inline DataView<T>::~DataView() = default;
 
 /// modifiers:
 template<class T>
-inline DataView<T>& DataView<T>::model(DataModel<T>* model) { m_model = model; return *this; }
+inline DataView<T>& DataView<T>::model(DataModel<T>* model) { if (model) m_model = model; return *this; }
 template<class T>
-inline DataView<T>& DataView<T>::item_font(FontRef const& font) { m_item_font = font; return *this; }
+inline DataView<T>& DataView<T>::item_font(FontRef const& font) { if (!font.expired()) m_item_font = font; return *this; }
 template<class T>
 inline DataView<T>& DataView<T>::margins(Margins const& margins) { m_margins = margins; return *this; }
 template<class T>
@@ -174,18 +176,11 @@ inline DataView<T>& DataView<T>::on_index_clicked(IndexCallback f) { m_index_cli
 template<class T>
 inline DataView<T>& DataView<T>::on_index_hovered(IndexCallback f) { m_index_hovered = f; return *this; }
 
-/// accessors:
-template<class T>
-inline bool DataView<T>::is_valid() const
-{
-    return m_model && !m_item_font.expired();
-}
-
 /// GUI functions:
 template<class T>
 bool DataView<T>::handle_mouse_event(MouseEvent const& event)
 {
-    if (!Super::handle_mouse_event(event) || !is_valid())
+    if (!Super::handle_mouse_event(event))
         return false;
     
     auto index = get_index_under(event.pos.x, event.pos.y);
@@ -204,7 +199,7 @@ bool DataView<T>::handle_mouse_event(MouseEvent const& event)
 template<class T>
 bool DataView<T>::handle_wheel_event(WheelEvent const& event)
 {
-    if (!Super::handle_wheel_event(event) || !is_valid())
+    if (!Super::handle_wheel_event(event))
         return false;
     
     int delta = event.wheel.y;
@@ -221,9 +216,6 @@ bool DataView<T>::handle_wheel_event(WheelEvent const& event)
 template<class T>
 void DataView<T>::render(Renderer const& renderer) const
 {
-    if (!is_valid())
-        return;
-    
     Super::render(renderer);
     render_body(renderer);
 }

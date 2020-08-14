@@ -13,6 +13,7 @@ set(APPLICATION_CXX_FILES
 	)
 set(TEXT_BUTTON_CXX_FILES
 	src/interfaces/button.cpp
+	src/interfaces/text.cpp
 	src/widgets/widgetitem.cpp
 	src/widgets/rectitem.cpp
 	src/widgets/textitem.cpp

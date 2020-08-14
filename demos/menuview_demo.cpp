@@ -108,10 +108,9 @@ void DemoApplication::init_menu_view()
         menu_model.add("C");
     }
     
-    auto menu_view = new MenuView({width() - 180, 0, 180, height()}, this, "menu-view");
+    auto menu_view = new MenuView({width() - 180, 0, 180, height()}, &menu_model, this, "menu-view");
     menu_view->item_font(font).item_height(30);
     menu_view->margins(Margins(10));
-    menu_view->model(&menu_model);
     menu_view->on_index_clicked([this](int index)
     {
         if (index >= 0)

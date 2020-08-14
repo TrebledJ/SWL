@@ -144,12 +144,11 @@ void DemoApplication::init_listmodels()
     
 void DemoApplication::init_listview()
 {
-    auto hireable = new ListView<Employee>({20, 60, 290, 320}, this);
+    auto hireable = new ListView<Employee>({20, 60, 290, 320}, &unemployed, this);
     hireable->headers({"ID", "First", "Last", "Job"}).header_font(header_font).header_height(30);
     hireable->item_font(normal_font).item_height(20);
     hireable->column_ratios({1, 3, 3, 4}).margins(Margins(10));
     hireable->item_padding(Padding{0, 0, 3, 0});
-    hireable->model(&unemployed);
     hireable->selection_color(Colors::LIGHT_BLUE);
     hireable->on_index_clicked([this](int index)
     {
@@ -157,12 +156,11 @@ void DemoApplication::init_listview()
             unemployed.toggle_select(index);
     });
     
-    auto fireable = new ListView<Employee>({width() / 2 + 10, 60, 290, 320}, this);
+    auto fireable = new ListView<Employee>({width() / 2 + 10, 60, 290, 320}, &employed, this);
     fireable->headers({"ID", "First", "Last", "Job"}).header_font(header_font).header_height(30);
     fireable->item_font(normal_font).item_height(20);
     fireable->column_ratios({1, 3, 3, 4}).margins(Margins(10));
     fireable->item_padding(Padding{0, 0, 3, 0});
-    fireable->model(&employed);
     fireable->selection_color(Colors::LIGHT_BLUE);
     fireable->on_index_clicked([this](int index)
     {

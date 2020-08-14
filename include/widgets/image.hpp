@@ -21,6 +21,8 @@
 #ifndef IMAGE_HPP
 #define IMAGE_HPP
 
+#if 0       //  TODO: ImageItem is currently a WIP
+
 #include "widgetitem.hpp"
 #include "types.hpp"
 #include "utility.hpp"
@@ -86,5 +88,6 @@ inline bool ImageItem::load(Renderer const& renderer, std::string const& filenam
     return bool( m_texture = make_texture(IMG_LoadTexture(renderer.get(), filename.data())) );
 }
 
+#endif
 
 #endif

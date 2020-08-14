@@ -88,7 +88,6 @@ inline TextItem::~TextItem() = default;
 /// GUI functions:
 inline void TextItem::render(Renderer const& renderer) const
 {
-    //  TODO: call show()/hide() when font is set? (do similar for DataView?)
     draw_text(renderer, m_dimensions, m_font.lock(), text(), m_alignment);
 }
 
