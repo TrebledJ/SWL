@@ -34,8 +34,8 @@ class RectItem : public WidgetItem
 {
 public:
     /// constructors:
-    RectItem(Canvas* parent = nullptr, std::string const& id = "") noexcept;
-    RectItem(SDL_Rect const& dimensions, Canvas* parent = nullptr, std::string const& id = "") noexcept;
+    RectItem(Canvas* parent = nullptr, std::string const& name = "") noexcept;
+    RectItem(SDL_Rect const& dimensions, Canvas* parent = nullptr, std::string const& name = "") noexcept;
     RectItem(RectItem const&) = delete;
     RectItem(RectItem&&) = delete;
     
@@ -58,7 +58,7 @@ protected:
 
 
 /// constructors:
-inline RectItem::RectItem(Canvas* parent, std::string const& id) noexcept : RectItem({0, 0, 0, 0}, parent, id) {}
+inline RectItem::RectItem(Canvas* parent, std::string const& name) noexcept : RectItem({0, 0, 0, 0}, parent, name) {}
 
 /// destructor:
 inline RectItem::~RectItem() = default;

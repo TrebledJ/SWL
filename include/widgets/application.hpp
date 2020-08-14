@@ -74,8 +74,7 @@ public:
     /**
      * @brief   Creates a managed font
      * @return  Returns a reference to the font
-     * @pre     Call after Application::init(). Renderer should be initialised,
-     *          otherwise a null FontRef is returned.
+     * @pre     Renderer should be initialised, otherwise a null FontRef is returned.
      */
     FontRef add_font(std::string const& filename, Uint32 point_size, SDL_Color const& color, int style = TTF_STYLE_NORMAL);
     

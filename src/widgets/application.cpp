@@ -111,7 +111,7 @@ void Application::loop()
 {
     scene_handler.update_state();
     
-    redraw();   //  TODO: find a way to redraw only when needed?
+//    redraw();   //  TODO: find a way to redraw only when needed?
     update(renderer);
     
     if (active_music_changed)

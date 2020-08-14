@@ -44,16 +44,6 @@ namespace Colors
     const auto WHITE            = SDL_Color{255, 255, 255, 255};
     
     const auto TRANSPARENT      = SDL_Color{0, 0, 0, 0};
-    
-    /**
-     * @param   factor A value between 0 to 1. The closer to 1, the darker the color
-     */
-    inline SDL_Color darken(SDL_Color const& color, float factor = 0.25);
-    
-    /**
-     * @param   factor A value between 0 to 1. The closer to 1, the brighter the color
-     */
-    inline SDL_Color lighten(SDL_Color const& color, float factor = 0.25);
 }
 
 namespace Themes
@@ -66,14 +56,15 @@ namespace Themes
     const auto SECONDARY = Colors::YELLOW;
 }
 
-namespace Colors {
+namespace Colors
+{
     /**
      * @param   factor A value between 0 to 1. The closer to 1, the darker the color
      */
     inline SDL_Color darken(SDL_Color const& color, float factor)
     {
-        factor = (factor > 1.0 ? 1.0 : factor < 0.0 ? 0.0 : factor);
-        return SDL_Color{Uint8(color.r * (1 - factor)), Uint8(color.g * (1 - factor)), Uint8(color.b * (1 - factor)), color.a};
+        factor = 1.0 - (factor > 1.0 ? 1.0 : factor < 0.0 ? 0.0 : factor);
+        return SDL_Color{Uint8(color.r * factor), Uint8(color.g * factor), Uint8(color.b * factor), color.a};
     }
     
     /**

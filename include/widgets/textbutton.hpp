@@ -44,8 +44,8 @@ class TextButton : public RectItem, public ButtonInterface, public TextInterface
     
 public:
     /// constructors:
-    TextButton(Canvas* parent = nullptr, std::string const& id = "") noexcept;
-    TextButton(SDL_Rect const& dimensions, Canvas* parent = nullptr, std::string const& id = "") noexcept;
+    TextButton(Canvas* parent = nullptr, std::string const& name = "") noexcept;
+    TextButton(SDL_Rect const& dimensions, Canvas* parent = nullptr, std::string const& name = "") noexcept;
     TextButton(TextButton const&) = delete;
     TextButton(TextButton&&) = delete;
     
@@ -63,12 +63,12 @@ public:
 
 
 /// constructors:
-inline TextButton::TextButton(Canvas* parent, std::string const& id) noexcept
-    : TextButton(SDL_Rect{0}, parent, id)
+inline TextButton::TextButton(Canvas* parent, std::string const& name) noexcept
+    : TextButton(SDL_Rect{0}, parent, name)
 {
 }
-inline TextButton::TextButton(SDL_Rect const& dimensions, Canvas* parent, std::string const& id) noexcept
-    : Super(dimensions, parent, id)
+inline TextButton::TextButton(SDL_Rect const& dimensions, Canvas* parent, std::string const& name) noexcept
+    : Super(dimensions, parent, name)
     , TextInterface(ALIGN_CENTER)
 {
 }

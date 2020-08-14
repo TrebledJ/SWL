@@ -73,8 +73,8 @@ public:
     /**
      * These constructors WILL initialise a texture, using the renderer passed.
      */
-    Canvas(int width, int height, Renderer const&, Canvas* parent = nullptr, std::string const& id = "");
-    Canvas(SDL_Rect const&, Renderer const&, Canvas* parent = nullptr, std::string const& id = "");
+    Canvas(int width, int height, Renderer const&, Canvas* parent = nullptr, std::string const& name = "");
+    Canvas(SDL_Rect const&, Renderer const&, Canvas* parent = nullptr, std::string const& name = "");
     
     Canvas(Canvas const&) = delete;
     Canvas(Canvas&&) = delete;

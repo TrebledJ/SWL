@@ -49,9 +49,9 @@ class TextItem : public WidgetItem, public TextInterface
 {
 public:
     /// constructors:
-    TextItem(Canvas* parent = nullptr, std::string const& id = "") noexcept;
-    TextItem(SDL_Rect const& dimensions, Canvas* parent = nullptr, std::string const& id = "") noexcept;
-    TextItem(SDL_Rect const& dimensions, Alignment, Canvas* parent = nullptr, std::string const& id = "") noexcept;
+    TextItem(Canvas* parent = nullptr, std::string const& name = "") noexcept;
+    TextItem(SDL_Rect const& dimensions, Canvas* parent = nullptr, std::string const& name = "") noexcept;
+    TextItem(SDL_Rect const& dimensions, Alignment, Canvas* parent = nullptr, std::string const& name = "") noexcept;
     TextItem(TextItem const&) = delete;
     TextItem(TextItem&&) = delete;
     
@@ -68,16 +68,16 @@ public:
 
 
 /// constructors:
-inline TextItem::TextItem(Canvas* parent, std::string const& id) noexcept
-    : TextItem({0, 0, 0, 0}, ALIGN_TOP_LEFT, parent, id)
+inline TextItem::TextItem(Canvas* parent, std::string const& name) noexcept
+    : TextItem({0, 0, 0, 0}, ALIGN_TOP_LEFT, parent, name)
 {
 }
-inline TextItem::TextItem(SDL_Rect const& dimensions, Canvas* parent, std::string const& id) noexcept
-    : TextItem(dimensions, ALIGN_TOP_LEFT, parent, id)
+inline TextItem::TextItem(SDL_Rect const& dimensions, Canvas* parent, std::string const& name) noexcept
+    : TextItem(dimensions, ALIGN_TOP_LEFT, parent, name)
 {
 }
-inline TextItem::TextItem(SDL_Rect const& dimensions, Alignment alignment, Canvas* parent, std::string const& id) noexcept
-    : WidgetItem(dimensions, parent, id)
+inline TextItem::TextItem(SDL_Rect const& dimensions, Alignment alignment, Canvas* parent, std::string const& name) noexcept
+    : WidgetItem(dimensions, parent, name)
     , TextInterface(alignment)
 {
 }

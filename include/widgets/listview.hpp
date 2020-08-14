@@ -69,8 +69,8 @@ class ListView<T> : public DataView<T>
     using Super = DataView<T>;
 public:
     /// constructors:
-    ListView(Canvas* parent = nullptr, std::string const& id = "") noexcept;
-    ListView(SDL_Rect const&, Canvas* parent = nullptr, std::string const& id = "") noexcept;
+    ListView(Canvas* parent = nullptr, std::string const& name = "") noexcept;
+    ListView(SDL_Rect const&, Canvas* parent = nullptr, std::string const& name = "") noexcept;
     ListView(ListView&&) = delete;
 
     /// destructors:
@@ -130,13 +130,13 @@ private:
 
 /// constructors:
 template<class T>
-inline ListView<T>::ListView(Canvas* parent, std::string const& id) noexcept
-    : ListView<T>({0, 0, 0, 0}, parent, id)
+inline ListView<T>::ListView(Canvas* parent, std::string const& name) noexcept
+    : ListView<T>({0, 0, 0, 0}, parent, name)
 {
 }
 template<class T>
-inline ListView<T>::ListView(SDL_Rect const& dimensions, Canvas* parent, std::string const& id) noexcept
-    : Super(dimensions, parent, id)
+inline ListView<T>::ListView(SDL_Rect const& dimensions, Canvas* parent, std::string const& name) noexcept
+    : Super(dimensions, parent, name)
     , m_header_height{60}
     , m_selection_color{Colors::LIGHT_GREEN}
     , m_draw_item_borders{false}

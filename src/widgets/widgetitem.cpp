@@ -26,8 +26,8 @@
 
 
 /// constructors:
-WidgetItem::WidgetItem(Canvas* parent, std::string const& id) noexcept
-    : WidgetItem(SDL_Rect{0}, parent, id)
+WidgetItem::WidgetItem(Canvas* parent, std::string const& name) noexcept
+    : WidgetItem(SDL_Rect{0}, parent, name)
 {
 }
 WidgetItem::WidgetItem(SDL_Rect const& dimensions, Canvas* parent, std::string const& name) noexcept

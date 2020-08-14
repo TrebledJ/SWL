@@ -38,8 +38,8 @@ class WidgetItem
 {
 public:
     /// constructors:
-    WidgetItem(Canvas* parent = nullptr, std::string const& id = "") noexcept;
-    WidgetItem(SDL_Rect const& dimensions, Canvas* parent = nullptr, std::string const& id = "") noexcept;
+    WidgetItem(Canvas* parent = nullptr, std::string const& name = "") noexcept;
+    WidgetItem(SDL_Rect const& dimensions, Canvas* parent = nullptr, std::string const& name = "") noexcept;
     WidgetItem(WidgetItem const&) = delete;
     WidgetItem(WidgetItem&&);
     

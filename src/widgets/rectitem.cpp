@@ -23,8 +23,8 @@
 #include "utility.hpp"
 
 
-RectItem::RectItem(SDL_Rect const& dimensions, Canvas* parent, std::string const& id) noexcept
-    : WidgetItem(dimensions, parent, id)
+RectItem::RectItem(SDL_Rect const& dimensions, Canvas* parent, std::string const& name) noexcept
+    : WidgetItem(dimensions, parent, name)
     , m_background_color{Themes::PRIMARY}
 {
 }

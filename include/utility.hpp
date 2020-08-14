@@ -170,9 +170,9 @@ inline TTFont make_font(std::string const& filename, unsigned font_size)
 inline SharedFont make_shared_font(Renderer const& renderer, std::string const& filename, Uint32 point_size,
                                    SDL_Color const& color, int style)
 {
-    auto cfont = std::shared_ptr<FC_Font>(FC_CreateFont(), FC_FreeFont);
-    FC_LoadFont(cfont.get(), renderer.get(), filename.data(), point_size, color, style);
-    return cfont;
+    auto font = std::shared_ptr<FC_Font>(FC_CreateFont(), FC_FreeFont);
+    FC_LoadFont(font.get(), renderer.get(), filename.data(), point_size, color, style);
+    return font;
 }
 
 inline SharedMusic make_shared_music(std::string const& source)
