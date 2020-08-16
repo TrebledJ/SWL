@@ -88,7 +88,7 @@ void DemoApplication::init_menu()
     
     constexpr int NUM_BUTTONS = 4;
     TextButton* buttons[NUM_BUTTONS];
-    std::string text[NUM_BUTTONS] = { "New", "/", "/", "Exit" };
+    std::string text[NUM_BUTTONS] = {"New", "/", "/", "Exit"};
     for (int i = 0; i < NUM_BUTTONS; ++i)
     {
         buttons[i] = new TextButton(menu_scene);
@@ -115,7 +115,7 @@ void DemoApplication::init_main()
     
     constexpr int NUM_BUTTONS = 5;
     TextButton* buttons[NUM_BUTTONS];
-    std::string text[NUM_BUTTONS] = { "Tab 1", "Tab 2", "Tab 3", "Tab 4" };
+    std::string text[NUM_BUTTONS] = {"Tab 1", "Tab 2", "Tab 3", "Tab 4"};
     for (int i = 0; i < NUM_BUTTONS-1; ++i)
     {
         buttons[i] = new TextButton(main_scene);

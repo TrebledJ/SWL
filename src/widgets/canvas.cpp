@@ -122,12 +122,15 @@ using namespace std::placeholders;
         it = from.erase(it);\
     }
 
-#define iterate(container)  \
-    for (auto it = container.begin(), next = it; it != container.end(); it = next)\
+#define iterate_impl(container, begin, end)  \
+    for (auto it = container.begin, next = it; it != container.end; it = next)\
     {\
         ++next;\
         f(it->second.get());\
     }
+
+#define iterate(container) iterate_impl(container, begin(), end())
+#define iterate_const(container) iterate_impl(container, cbegin(), cend())
 
 #define findret(container) \
     {\
@@ -248,8 +251,8 @@ void Canvas::foreach_child(std::function<void(WidgetItem*)> f, ChildFlags flags)
         else
         {
             //  only VISIBLE was specified but neither ITEMS/CANVASES were... so apply `f` to all
-            iterate(m_visible_items)
             iterate(m_visible_canvases)
+            iterate(m_visible_items)
         }
     }
     
@@ -259,8 +262,8 @@ void Canvas::foreach_child(std::function<void(WidgetItem*)> f, ChildFlags flags)
         else if (flags & CANVASES) { iterate(m_invisible_canvases) }
         else
         {
-            iterate(m_invisible_items)
             iterate(m_invisible_canvases)
+            iterate(m_invisible_items)
         }
     }
 }
@@ -268,27 +271,27 @@ void Canvas::foreach_child(std::function<void(WidgetItem*)> f, ChildFlags flags)
 void Canvas::show(ItemID id)
 {
     //  move item with given id from invisible to visible
-    findmove(m_invisible_items, m_visible_items)
     findmove(m_invisible_canvases, m_visible_canvases)
+    findmove(m_invisible_items, m_visible_items)
 }
 
 void Canvas::hide(ItemID id)
 {
     //  move item with given id from visible to invisible
-    findmove(m_visible_items, m_invisible_items)
     findmove(m_visible_canvases, m_invisible_canvases)
+    findmove(m_visible_items, m_invisible_items)
 }
 
 void Canvas::show_children()
 {
-    moveall(m_invisible_items, m_visible_items)
     moveall(m_invisible_canvases, m_visible_canvases)
+    moveall(m_invisible_items, m_visible_items)
 }
 
 void Canvas::hide_children()
 {
-    moveall(m_visible_items, m_invisible_items)
     moveall(m_visible_canvases, m_invisible_canvases)
+    moveall(m_visible_items, m_invisible_items)
 }
 
 /// accessors:
@@ -303,10 +306,10 @@ WidgetItem* Canvas::child(ItemID id) const
     if (id != 0)
     {
         //  look for the child in each container; return if found
-        findret(m_visible_items)
-        findret(m_invisible_items)
         findret(m_visible_canvases)
         findret(m_invisible_canvases)
+        findret(m_visible_items)
+        findret(m_invisible_items)
     }
     
     return nullptr;
@@ -317,24 +320,24 @@ void Canvas::foreach_child(std::function<void(WidgetItem*)> f, ChildFlags flags)
     //  iterate over containers based on flags
     if (flags & VISIBLE)
     {
-        if (flags & ITEMS) { iterate(m_visible_items) }
-        else if (flags & CANVASES) { iterate(m_visible_canvases) }
+        if (flags & ITEMS) { iterate_const(m_visible_items) }
+        else if (flags & CANVASES) { iterate_const(m_visible_canvases) }
         else
         {
             //  only VISIBLE was specified but neither ITEMS/CANVASES were... so apply `f` to all
-            iterate(m_visible_items)
-            iterate(m_visible_canvases)
+            iterate_const(m_visible_canvases)
+            iterate_const(m_visible_items)
         }
     }
     
     if (flags & INVISIBLE)
     {
-        if (flags & ITEMS) { iterate(m_invisible_items) }
-        else if (flags & CANVASES) { iterate(m_invisible_canvases) }
+        if (flags & ITEMS) { iterate_const(m_invisible_items) }
+        else if (flags & CANVASES) { iterate_const(m_invisible_canvases) }
         else
         {
-            iterate(m_invisible_items)
-            iterate(m_invisible_canvases)
+            iterate_const(m_invisible_canvases)
+            iterate_const(m_invisible_items)
         }
     }
 }
